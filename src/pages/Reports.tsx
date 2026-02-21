@@ -10,12 +10,10 @@ import {
   Area,
   AreaChart
 } from 'recharts';
-import { monthlyData, getIncomeTotal, getExpenseTotal, getBalance } from '@/data/mockData';
+import { useData } from '@/contexts/DataContext';
+import { getTransactions } from '@/lib/api/transactions';
+import { toast } from 'sonner';
 import type { Transaction } from '@/types';
-
-interface ReportsProps {
-  transactions: Transaction[];
-}
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -34,42 +32,68 @@ const formatCurrencyFull = (amount: number) => {
   }).format(amount);
 };
 
-export function ReportsPage({ transactions }: ReportsProps) {
+export function ReportsPage() {
+  const { 
+    dashboardSummary, 
+    monthlyData,
+    refreshDashboard 
+  } = useData();
+  
   const [isVisible, setIsVisible] = useState(false);
   const [period, setPeriod] = useState<'month' | 'year'>('month');
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  const income = getIncomeTotal();
-  const expense = getExpenseTotal();
-  const balance = getBalance();
+  // Load all transactions for reports
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        await refreshDashboard();
+        const txs = await getTransactions();
+        setAllTransactions(txs);
+      } catch (error) {
+        console.error('Error loading report data:', error);
+        toast.error('Failed to load report data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [refreshDashboard]);
 
-  const savingsRate = income > 0 ? ((income - expense) / income) * 100 : 0;
+  const income = dashboardSummary?.income || 0;
+  const expense = dashboardSummary?.expense || 0;
+  const balance = dashboardSummary?.balance || 0;
+  const savingsRate = dashboardSummary?.savingsRate || 0;
 
   const largestExpense = useMemo(() => {
-    return transactions
+    return allTransactions
       .filter(t => t.type === 'expense')
       .sort((a, b) => b.amount - a.amount)[0];
-  }, [transactions]);
+  }, [allTransactions]);
 
   const topCategory = useMemo(() => {
     const categoryTotals: Record<string, number> = {};
-    transactions
+    allTransactions
       .filter(t => t.type === 'expense')
       .forEach(t => {
         categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
       });
     const sorted = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
     return sorted[0] || ['None', 0];
-  }, [transactions]);
+  }, [allTransactions]);
 
   const handleExport = () => {
     const csvContent = [
       ['Date', 'Category', 'Type', 'Amount', 'Notes'].join(','),
-      ...transactions.map(t => [
+      ...allTransactions.map(t => [
         t.date,
         t.category,
         t.type,
@@ -85,6 +109,8 @@ export function ReportsPage({ transactions }: ReportsProps) {
     a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
+    
+    toast.success('Transactions exported successfully');
   };
 
   return (
@@ -108,7 +134,8 @@ export function ReportsPage({ transactions }: ReportsProps) {
           </div>
           <Button
             onClick={handleExport}
-            className="flex items-center gap-2 bg-ledger-surface border border-ledger-border text-ledger-text hover:border-gold/50 hover:text-gold transition-colors"
+            disabled={isLoading || allTransactions.length === 0}
+            className="flex items-center gap-2 bg-ledger-surface border border-ledger-border text-ledger-text hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             Export CSV
@@ -192,44 +219,54 @@ export function ReportsPage({ transactions }: ReportsProps) {
               </div>
             </div>
             <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyData}>
-                  <defs>
-                    <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#c9a227" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#c9a227" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#a8b5b0', fontSize: 11 }}
-                  />
-                  <YAxis 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#a8b5b0', fontSize: 11 }}
-                    tickFormatter={(value) => formatCurrency(value)}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#141f1c',
-                      border: '1px solid rgba(245, 243, 239, 0.08)',
-                      borderRadius: '8px',
-                      color: '#f5f3ef',
-                    }}
-                    formatter={(value: number) => formatCurrencyFull(value)}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="balance" 
-                    stroke="#c9a227" 
-                    strokeWidth={2}
-                    fill="url(#balanceGradient)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {isLoading ? (
+                <div className="h-full flex items-center justify-center">
+                  <span className="w-6 h-6 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
+                </div>
+              ) : monthlyData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={monthlyData}>
+                    <defs>
+                      <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#c9a227" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#c9a227" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis 
+                      dataKey="month" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#a8b5b0', fontSize: 11 }}
+                    />
+                    <YAxis 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#a8b5b0', fontSize: 11 }}
+                      tickFormatter={(value) => formatCurrency(value)}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#141f1c',
+                        border: '1px solid rgba(245, 243, 239, 0.08)',
+                        borderRadius: '8px',
+                        color: '#f5f3ef',
+                      }}
+                      formatter={(value: number) => formatCurrencyFull(value)}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="balance" 
+                      stroke="#c9a227" 
+                      strokeWidth={2}
+                      fill="url(#balanceGradient)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-ledger-text-secondary">
+                  No data available
+                </div>
+              )}
             </div>
           </Card>
         </div>
@@ -297,7 +334,7 @@ export function ReportsPage({ transactions }: ReportsProps) {
                       <div className="w-16 h-1.5 bg-ledger-bg rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-ledger-income rounded-full"
-                          style={{ width: `${(month.income / 7000) * 100}%` }}
+                          style={{ width: `${Math.min((month.income / 7000) * 100, 100)}%` }}
                         />
                       </div>
                       <span className="text-ledger-income text-xs tabular-nums w-14 text-right">
@@ -308,7 +345,7 @@ export function ReportsPage({ transactions }: ReportsProps) {
                       <div className="w-16 h-1.5 bg-ledger-bg rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-ledger-expense rounded-full"
-                          style={{ width: `${(month.expense / 7000) * 100}%` }}
+                          style={{ width: `${Math.min((month.expense / 7000) * 100, 100)}%` }}
                         />
                       </div>
                       <span className="text-ledger-expense text-xs tabular-nums w-14 text-right">

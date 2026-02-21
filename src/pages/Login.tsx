@@ -2,17 +2,15 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lock, Mail } from 'lucide-react';
+import { Lock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
-interface LoginProps {
-  onLogin: () => void;
-}
-
-export function Login({ onLogin }: LoginProps) {
-  const [email, setEmail] = useState('');
+export function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const { login } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -21,11 +19,23 @@ export function Login({ onLogin }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!password) return;
+
     setIsLoading(true);
-    // Simulate login
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setIsLoading(false);
-    onLogin();
+    
+    try {
+      const { error } = await login(password);
+      
+      if (error) {
+        toast.error('Invalid password. Please try again.');
+      } else {
+        toast.success('Welcome back, Jim!');
+      }
+    } catch (err) {
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -77,24 +87,6 @@ export function Login({ onLogin }: LoginProps) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-ledger-text-secondary text-xs uppercase tracking-wider">
-              Email
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ledger-text-secondary" />
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jim@example.com"
-                className="pl-10 bg-ledger-bg border-ledger-border text-ledger-text placeholder:text-ledger-text-secondary/50 focus:border-gold focus:ring-gold/20"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="password" className="text-ledger-text-secondary text-xs uppercase tracking-wider">
               Password
             </Label>
@@ -108,13 +100,14 @@ export function Login({ onLogin }: LoginProps) {
                 placeholder="••••••••"
                 className="pl-10 bg-ledger-bg border-ledger-border text-ledger-text placeholder:text-ledger-text-secondary/50 focus:border-gold focus:ring-gold/20"
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
 
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !password}
             className="w-full mt-6 bg-gold text-ledger-bg font-medium hover:bg-ledger-gold-dim transition-colors"
             style={{ backgroundColor: '#c9a227', color: '#0c1412' }}
           >

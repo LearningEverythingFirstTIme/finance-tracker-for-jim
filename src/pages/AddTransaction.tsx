@@ -7,12 +7,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon, Briefcase, Laptop, TrendingUp, ShoppingCart, Utensils, Car, Zap, Home, Film, Heart, ShoppingBag, MoreHorizontal, Upload } from 'lucide-react';
+import { useData } from '@/contexts/DataContext';
 import { categories } from '@/data/mockData';
-import type { Transaction } from '@/types';
+import type { ViewState } from '@/types';
 
 interface AddTransactionProps {
-  onAdd: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => void;
-  onNavigate: (view: string) => void;
+  onNavigate: (view: ViewState) => void;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -30,7 +30,8 @@ const iconMap: Record<string, React.ElementType> = {
   MoreHorizontal,
 };
 
-export function AddTransaction({ onAdd, onNavigate }: AddTransactionProps) {
+export function AddTransaction({ onNavigate }: AddTransactionProps) {
+  const { addTransaction, isLoading } = useData();
   const [isVisible, setIsVisible] = useState(false);
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -52,20 +53,30 @@ export function AddTransaction({ onAdd, onNavigate }: AddTransactionProps) {
 
     setIsSubmitting(true);
     
-    const selectedCategory = categories.find(c => c.id === category);
-    
-    onAdd({
-      date: format(date, 'yyyy-MM-dd'),
-      amount: parseFloat(amount),
-      category: selectedCategory?.name || '',
-      categoryId: category,
-      type,
-      notes,
-    });
+    try {
+      const selectedCategory = categories.find(c => c.id === category);
+      
+      await addTransaction({
+        date: format(date, 'yyyy-MM-dd'),
+        amount: parseFloat(amount),
+        category: selectedCategory?.name || '',
+        categoryId: category,
+        type,
+        notes,
+      });
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setIsSubmitting(false);
-    onNavigate('dashboard');
+      // Reset form
+      setAmount('');
+      setCategory('');
+      setNotes('');
+      setDate(new Date());
+      
+      onNavigate('dashboard');
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,14 +252,14 @@ export function AddTransaction({ onAdd, onNavigate }: AddTransactionProps) {
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={!amount || !category || isSubmitting}
+              disabled={!amount || !category || isSubmitting || isLoading}
               className="w-full py-6 font-medium transition-all duration-200 disabled:opacity-50"
               style={{ 
                 backgroundColor: !amount || !category ? 'rgba(201, 162, 39, 0.3)' : '#c9a227',
                 color: '#0c1412'
               }}
             >
-              {isSubmitting ? (
+              {isSubmitting || isLoading ? (
                 <span className="flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-ledger-bg/30 border-t-ledger-bg rounded-full animate-spin" />
                   Saving...

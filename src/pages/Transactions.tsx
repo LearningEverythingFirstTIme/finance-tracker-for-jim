@@ -2,12 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search, Trash2, Briefcase, Laptop, TrendingUp, ShoppingCart, Utensils, Car, Zap, Home, Film, Heart, ShoppingBag, MoreHorizontal } from 'lucide-react';
+import { useData } from '@/contexts/DataContext';
+import { toast } from 'sonner';
 import type { Transaction } from '@/types';
-
-interface TransactionsProps {
-  transactions: Transaction[];
-  onDelete: (id: string) => void;
-}
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -75,7 +72,8 @@ const formatDate = (dateStr: string) => {
   return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(date);
 };
 
-export function TransactionsPage({ transactions, onDelete }: TransactionsProps) {
+export function TransactionsPage() {
+  const { transactions, deleteTransaction, refreshTransactions, isLoading } = useData();
   const [isVisible, setIsVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
@@ -85,6 +83,11 @@ export function TransactionsPage({ transactions, onDelete }: TransactionsProps) 
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Load transactions on mount
+  useEffect(() => {
+    refreshTransactions();
+  }, [refreshTransactions]);
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
@@ -99,9 +102,15 @@ export function TransactionsPage({ transactions, onDelete }: TransactionsProps) 
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    await new Promise(resolve => setTimeout(resolve, 300));
-    onDelete(id);
-    setDeletingId(null);
+    
+    try {
+      await deleteTransaction(id);
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      toast.error('Failed to delete transaction');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -118,7 +127,7 @@ export function TransactionsPage({ transactions, onDelete }: TransactionsProps) 
             TRANSACTIONS
           </h1>
           <p className="text-ledger-text-secondary text-sm">
-            {filteredTransactions.length} entries found
+            {isLoading ? 'Loading...' : `${filteredTransactions.length} entries found`}
           </p>
         </div>
 
@@ -170,7 +179,14 @@ export function TransactionsPage({ transactions, onDelete }: TransactionsProps) 
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          {groupedTransactions.length === 0 ? (
+          {isLoading ? (
+            <Card className="bg-ledger-surface border-ledger-border p-12 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <span className="w-5 h-5 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
+                <span className="text-ledger-text-secondary">Loading transactions...</span>
+              </div>
+            </Card>
+          ) : groupedTransactions.length === 0 ? (
             <Card className="bg-ledger-surface border-ledger-border p-12 text-center">
               <p className="text-ledger-text-secondary">No transactions found</p>
               <p className="text-ledger-text-secondary/60 text-sm mt-1">Try adjusting your search or filters</p>
@@ -216,7 +232,8 @@ export function TransactionsPage({ transactions, onDelete }: TransactionsProps) 
                           </p>
                           <button
                             onClick={() => handleDelete(transaction.id)}
-                            className="p-2 text-ledger-text-secondary hover:text-ledger-expense transition-colors"
+                            disabled={deletingId === transaction.id}
+                            className="p-2 text-ledger-text-secondary hover:text-ledger-expense transition-colors disabled:opacity-50"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, Check, AlertCircle, X } from 'lucide-react';
-import type { Transaction } from '@/types';
+import { useData } from '@/contexts/DataContext';
+import { toast } from 'sonner';
+import type { ViewState } from '@/types';
 
 interface ImportCSVProps {
-  onImport: (transactions: Omit<Transaction, 'id' | 'createdAt'>[]) => void;
-  onNavigate: (view: string) => void;
+  onNavigate: (view: ViewState) => void;
 }
 
 interface ParsedRow {
@@ -17,7 +18,8 @@ interface ParsedRow {
   type: 'income' | 'expense';
 }
 
-export function ImportCSV({ onImport, onNavigate }: ImportCSVProps) {
+export function ImportCSV({ onNavigate }: ImportCSVProps) {
+  const { importTransactions } = useData();
   const [isVisible, setIsVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedRow[]>([]);
@@ -104,7 +106,7 @@ export function ImportCSV({ onImport, onNavigate }: ImportCSVProps) {
 
   const handleFile = (file: File) => {
     if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-      alert('Please upload a CSV file');
+      toast.error('Please upload a CSV file');
       return;
     }
     
@@ -114,6 +116,7 @@ export function ImportCSV({ onImport, onNavigate }: ImportCSVProps) {
       const content = e.target?.result as string;
       const parsed = parseCSV(content);
       setParsedData(parsed);
+      toast.success(`Found ${parsed.length} transactions`);
     };
     reader.readAsText(file);
   };
@@ -137,21 +140,27 @@ export function ImportCSV({ onImport, onNavigate }: ImportCSVProps) {
   }, []);
 
   const handleImport = async () => {
+    if (parsedData.length === 0) return;
+    
     setIsImporting(true);
     
-    const transactions = parsedData.map(row => ({
-      date: row.date,
-      amount: row.amount,
-      category: row.category,
-      categoryId: '',
-      type: row.type,
-      notes: row.description,
-    }));
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    onImport(transactions);
-    setIsImporting(false);
-    onNavigate('transactions');
+    try {
+      const transactions = parsedData.map(row => ({
+        date: row.date,
+        amount: row.amount,
+        category: row.category,
+        categoryId: '', // Will be set by backend or left empty
+        type: row.type,
+        notes: row.description,
+      }));
+      
+      await importTransactions(transactions);
+      setIsImporting(false);
+      onNavigate('transactions');
+    } catch (error) {
+      console.error('Import error:', error);
+      setIsImporting(false);
+    }
   };
 
   const clearFile = () => {

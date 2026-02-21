@@ -2,12 +2,9 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Home, Zap, Wifi, Smartphone, Dumbbell, Film, Check, AlertCircle, Clock } from 'lucide-react';
-import type { Bill } from '@/types';
-
-interface BillsProps {
-  bills: Bill[];
-  onTogglePaid: (id: string) => void;
-}
+import { useData } from '@/contexts/DataContext';
+import { toast } from 'sonner';
+// Bill type is used implicitly through useData
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -58,13 +55,20 @@ const getStatusIcon = (status: string, daysUntil: number) => {
   return Clock;
 };
 
-export function BillsPage({ bills, onTogglePaid }: BillsProps) {
+export function BillsPage() {
+  const { bills, toggleBillPaid, refreshBills, isLoading } = useData();
   const [isVisible, setIsVisible] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Load bills on mount
+  useEffect(() => {
+    refreshBills();
+  }, [refreshBills]);
 
   const sortedBills = [...bills].sort((a, b) => {
     const daysA = getDaysUntil(a.dueDate);
@@ -82,6 +86,20 @@ export function BillsPage({ bills, onTogglePaid }: BillsProps) {
     const days = getDaysUntil(b.dueDate);
     return days < 0 && b.status !== 'paid';
   }).length;
+
+  const handleTogglePaid = async (id: string, currentStatus: string) => {
+    setTogglingId(id);
+    
+    try {
+      const newPaidStatus = currentStatus !== 'paid';
+      await toggleBillPaid(id, newPaidStatus);
+    } catch (error) {
+      console.error('Error toggling bill:', error);
+      toast.error('Failed to update bill status');
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 md:px-6">
@@ -131,85 +149,104 @@ export function BillsPage({ bills, onTogglePaid }: BillsProps) {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          {sortedBills.map((bill) => {
-            const Icon = iconMap[bill.category] || Zap;
-            const daysUntil = getDaysUntil(bill.dueDate);
-            const statusClass = getStatusColor(bill.status, daysUntil);
-            const statusText = getStatusText(bill.status, daysUntil);
-            const StatusIcon = getStatusIcon(bill.status, daysUntil);
-            const isPaid = bill.status === 'paid';
+          {isLoading ? (
+            <Card className="bg-ledger-surface border-ledger-border p-12 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <span className="w-5 h-5 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
+                <span className="text-ledger-text-secondary">Loading bills...</span>
+              </div>
+            </Card>
+          ) : sortedBills.length === 0 ? (
+            <Card className="bg-ledger-surface border-ledger-border p-12 text-center">
+              <p className="text-ledger-text-secondary">No bills found</p>
+              <p className="text-ledger-text-secondary/60 text-sm mt-1">Add your first bill to start tracking</p>
+            </Card>
+          ) : (
+            sortedBills.map((bill) => {
+              const Icon = iconMap[bill.category] || Zap;
+              const daysUntil = getDaysUntil(bill.dueDate);
+              const statusClass = getStatusColor(bill.status, daysUntil);
+              const statusText = getStatusText(bill.status, daysUntil);
+              const StatusIcon = getStatusIcon(bill.status, daysUntil);
+              const isPaid = bill.status === 'paid';
 
-            return (
-              <Card 
-                key={bill.id} 
-                className={`
-                  bg-ledger-surface border-ledger-border p-4 card-lift
-                  ${isPaid ? 'opacity-60' : ''}
-                `}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    {/* Date Circle */}
-                    <div 
-                      className={`
-                        w-14 h-14 rounded-full flex flex-col items-center justify-center border
-                        ${daysUntil < 0 && !isPaid ? 'border-ledger-expense/30 bg-ledger-expense/10' : ''}
-                        ${daysUntil === 0 && !isPaid ? 'border-gold/30 bg-gold/10' : ''}
-                        ${isPaid ? 'border-ledger-income/30 bg-ledger-income/10' : ''}
-                        ${daysUntil > 0 && !isPaid ? 'border-ledger-border bg-ledger-bg' : ''}
-                      `}
-                    >
-                      <span className="text-xs text-ledger-text-secondary uppercase">
-                        {new Date(bill.dueDate).toLocaleDateString('en-US', { month: 'short' })}
-                      </span>
-                      <span className={`font-serif text-lg ${
-                        daysUntil < 0 && !isPaid ? 'text-ledger-expense' :
-                        daysUntil === 0 && !isPaid ? 'text-gold' :
-                        isPaid ? 'text-ledger-income' : 'text-ledger-text'
-                      }`}>
-                        {new Date(bill.dueDate).getDate()}
-                      </span>
+              return (
+                <Card 
+                  key={bill.id} 
+                  className={`
+                    bg-ledger-surface border-ledger-border p-4 card-lift
+                    ${isPaid ? 'opacity-60' : ''}
+                  `}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {/* Date Circle */}
+                      <div 
+                        className={`
+                          w-14 h-14 rounded-full flex flex-col items-center justify-center border
+                          ${daysUntil < 0 && !isPaid ? 'border-ledger-expense/30 bg-ledger-expense/10' : ''}
+                          ${daysUntil === 0 && !isPaid ? 'border-gold/30 bg-gold/10' : ''}
+                          ${isPaid ? 'border-ledger-income/30 bg-ledger-income/10' : ''}
+                          ${daysUntil > 0 && !isPaid ? 'border-ledger-border bg-ledger-bg' : ''}
+                        `}
+                      >
+                        <span className="text-xs text-ledger-text-secondary uppercase">
+                          {new Date(bill.dueDate).toLocaleDateString('en-US', { month: 'short' })}
+                        </span>
+                        <span className={`font-serif text-lg ${
+                          daysUntil < 0 && !isPaid ? 'text-ledger-expense' :
+                          daysUntil === 0 && !isPaid ? 'text-gold' :
+                          isPaid ? 'text-ledger-income' : 'text-ledger-text'
+                        }`}>
+                          {new Date(bill.dueDate).getDate()}
+                        </span>
+                      </div>
+
+                      {/* Bill Info */}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Icon className="w-4 h-4 text-ledger-text-secondary" />
+                          <p className="text-ledger-text font-medium">{bill.name}</p>
+                        </div>
+                        <p className="text-ledger-text-secondary text-sm">{bill.category}</p>
+                        <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs mt-1 ${statusClass}`}>
+                          <StatusIcon className="w-3 h-3" />
+                          {statusText}
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Bill Info */}
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Icon className="w-4 h-4 text-ledger-text-secondary" />
-                        <p className="text-ledger-text font-medium">{bill.name}</p>
-                      </div>
-                      <p className="text-ledger-text-secondary text-sm">{bill.category}</p>
-                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs mt-1 ${statusClass}`}>
-                        <StatusIcon className="w-3 h-3" />
-                        {statusText}
-                      </div>
+                    {/* Amount & Action */}
+                    <div className="text-right">
+                      <p className={`font-serif text-lg tabular-nums ${isPaid ? 'text-ledger-income' : 'text-ledger-text'}`}>
+                        {formatCurrency(bill.amount)}
+                      </p>
+                      <p className="text-ledger-text-secondary text-xs">{bill.frequency}</p>
+                      <Button
+                        size="sm"
+                        onClick={() => handleTogglePaid(bill.id, bill.status)}
+                        disabled={togglingId === bill.id}
+                        className={`
+                          mt-2 text-xs px-3 py-1 h-auto
+                          ${isPaid 
+                            ? 'bg-ledger-text-secondary/20 text-ledger-text-secondary hover:bg-ledger-text-secondary/30' 
+                            : 'bg-gold/10 text-gold hover:bg-gold/20 border border-gold/30'
+                          }
+                        `}
+                        style={isPaid ? {} : { backgroundColor: 'rgba(201, 162, 39, 0.1)' }}
+                      >
+                        {togglingId === bill.id ? (
+                          <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          isPaid ? 'Mark Unpaid' : 'Mark Paid'
+                        )}
+                      </Button>
                     </div>
                   </div>
-
-                  {/* Amount & Action */}
-                  <div className="text-right">
-                    <p className={`font-serif text-lg tabular-nums ${isPaid ? 'text-ledger-income' : 'text-ledger-text'}`}>
-                      {formatCurrency(bill.amount)}
-                    </p>
-                    <p className="text-ledger-text-secondary text-xs">{bill.frequency}</p>
-                    <Button
-                      size="sm"
-                      onClick={() => onTogglePaid(bill.id)}
-                      className={`
-                        mt-2 text-xs px-3 py-1 h-auto
-                        ${isPaid 
-                          ? 'bg-ledger-text-secondary/20 text-ledger-text-secondary hover:bg-ledger-text-secondary/30' 
-                          : 'bg-gold/10 text-gold hover:bg-gold/20 border border-gold/30'
-                        }
-                      `}
-                      style={isPaid ? {} : { backgroundColor: 'rgba(201, 162, 39, 0.1)' }}
-                    >
-                      {isPaid ? 'Mark Unpaid' : 'Mark Paid'}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
+                </Card>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

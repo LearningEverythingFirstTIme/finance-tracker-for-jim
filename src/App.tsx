@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Login } from '@/pages/Login';
 import { Dashboard } from '@/pages/Dashboard';
 import { AddTransaction } from '@/pages/AddTransaction';
@@ -8,60 +8,67 @@ import { ReportsPage } from '@/pages/Reports';
 import { ImportCSV } from '@/pages/ImportCSV';
 import { Header } from '@/components/Header';
 import { BottomNav } from '@/components/BottomNav';
-import { transactions as initialTransactions, bills as initialBills } from '@/data/mockData';
-import type { Transaction, Bill, ViewState } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
+import type { ViewState } from '@/types';
+
+// Simple hook to manage view state
+function useViewState() {
+  const [currentView, setCurrentViewState] = useState<ViewState>('dashboard');
+
+  const setCurrentView = useCallback((view: ViewState) => {
+    setCurrentViewState(view);
+    // Store in session storage for persistence during session
+    sessionStorage.setItem('currentView', view);
+  }, []);
+
+  // Restore view on mount
+  useEffect(() => {
+    const saved = sessionStorage.getItem('currentView') as ViewState;
+    if (saved && ['dashboard', 'add', 'transactions', 'bills', 'reports', 'import'].includes(saved)) {
+      setCurrentViewState(saved);
+    }
+  }, []);
+
+  return { currentView, setCurrentView };
+}
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewState>('dashboard');
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
-  const [bills, setBills] = useState<Bill[]>(initialBills);
-
-  const handleLogin = useCallback(() => {
-    setIsLoggedIn(true);
-  }, []);
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { currentView, setCurrentView } = useViewState();
 
   const handleNavigate = useCallback((view: string) => {
     if (['dashboard', 'add', 'transactions', 'bills', 'reports', 'import'].includes(view)) {
       setCurrentView(view as ViewState);
     }
-  }, []);
+  }, [setCurrentView]);
 
-  const handleAddTransaction = useCallback((transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
-    const newTransaction: Transaction = {
-      ...transaction,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    setTransactions(prev => [newTransaction, ...prev]);
-  }, []);
+  // Show loading state while checking auth
+  if (isAuthLoading) {
+    return (
+      <div className="bg-ledger-bg min-h-screen flex items-center justify-center">
+        <div className="grain-overlay" />
+        <div className="flex flex-col items-center gap-4">
+          <div 
+            className="w-16 h-16 rounded-full flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(201, 162, 39, 0.05) 100%)',
+              border: '1px solid rgba(201, 162, 39, 0.3)',
+            }}
+          >
+            <span className="font-serif text-2xl text-gold font-semibold">J</span>
+          </div>
+          <span className="w-5 h-5 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
-  const handleDeleteTransaction = useCallback((id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
-  }, []);
-
-  const handleToggleBillPaid = useCallback((id: string) => {
-    setBills(prev => prev.map(bill => 
-      bill.id === id 
-        ? { ...bill, status: bill.status === 'paid' ? 'pending' : 'paid' }
-        : bill
-    ));
-  }, []);
-
-  const handleImportTransactions = useCallback((newTransactions: Omit<Transaction, 'id' | 'createdAt'>[]) => {
-    const imported: Transaction[] = newTransactions.map((t, index) => ({
-      ...t,
-      id: `imported-${Date.now()}-${index}`,
-      createdAt: new Date().toISOString(),
-    }));
-    setTransactions(prev => [...imported, ...prev]);
-  }, []);
-
-  if (!isLoggedIn) {
+  // Show login if not authenticated
+  if (!isAuthenticated) {
     return (
       <div className="bg-ledger-bg min-h-screen">
         <div className="grain-overlay" />
-        <Login onLogin={handleLogin} />
+        <Login />
       </div>
     );
   }
@@ -71,15 +78,15 @@ function App() {
       case 'dashboard':
         return <Dashboard onNavigate={handleNavigate} />;
       case 'add':
-        return <AddTransaction onAdd={handleAddTransaction} onNavigate={handleNavigate} />;
+        return <AddTransaction onNavigate={handleNavigate} />;
       case 'transactions':
-        return <TransactionsPage transactions={transactions} onDelete={handleDeleteTransaction} />;
+        return <TransactionsPage />;
       case 'bills':
-        return <BillsPage bills={bills} onTogglePaid={handleToggleBillPaid} />;
+        return <BillsPage />;
       case 'reports':
-        return <ReportsPage transactions={transactions} />;
+        return <ReportsPage />;
       case 'import':
-        return <ImportCSV onImport={handleImportTransactions} onNavigate={handleNavigate} />;
+        return <ImportCSV onNavigate={handleNavigate} />;
       default:
         return <Dashboard onNavigate={handleNavigate} />;
     }

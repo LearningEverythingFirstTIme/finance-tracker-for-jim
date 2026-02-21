@@ -12,10 +12,11 @@ import {
   YAxis,
   Tooltip
 } from 'recharts';
-import { transactions, monthlyData, categoryBreakdown, getIncomeTotal, getExpenseTotal, getBalance } from '@/data/mockData';
+import { useData } from '@/contexts/DataContext';
+import type { ViewState } from '@/types';
 
 interface DashboardProps {
-  onNavigate: (view: string) => void;
+  onNavigate: (view: ViewState) => void;
 }
 
 const formatCurrency = (amount: number) => {
@@ -31,19 +32,47 @@ const formatDate = (dateStr: string) => {
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
 };
 
+const COLORS = ['#c9a227', '#5a9a6e', '#a8b5b0', '#7a8b85', '#c75b5b', '#5a6a65'];
+
 export function Dashboard({ onNavigate }: DashboardProps) {
+  const { 
+    transactions, 
+    dashboardSummary, 
+    categoryBreakdown, 
+    monthlyData, 
+    refreshDashboard,
+    refreshTransactions 
+  } = useData();
+  
   const [isVisible, setIsVisible] = useState(false);
   const [displayBalance, setDisplayBalance] = useState(0);
   const [displayIncome, setDisplayIncome] = useState(0);
   const [displayExpense, setDisplayExpense] = useState(0);
-  const balanceRef = useRef(getBalance());
-  const incomeRef = useRef(getIncomeTotal());
-  const expenseRef = useRef(getExpenseTotal());
+  
+  const balanceRef = useRef(0);
+  const incomeRef = useRef(0);
+  const expenseRef = useRef(0);
 
+  // Update refs when data changes
+  useEffect(() => {
+    if (dashboardSummary) {
+      balanceRef.current = dashboardSummary.balance;
+      incomeRef.current = dashboardSummary.income;
+      expenseRef.current = dashboardSummary.expense;
+    }
+  }, [dashboardSummary]);
+
+  // Load data on mount
   useEffect(() => {
     setIsVisible(true);
+    refreshDashboard();
+    refreshTransactions();
+  }, [refreshDashboard, refreshTransactions]);
+
+  // Animate numbers when data is available
+  useEffect(() => {
+    if (!dashboardSummary) return;
     
-    // Animate numbers
     const duration = 1000;
     const steps = 30;
     const interval = duration / steps;
@@ -62,7 +91,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     }, interval);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [dashboardSummary]);
 
   const recentTransactions = transactions.slice(0, 5);
 
@@ -83,6 +112,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     };
     return icons[category] || '•';
   };
+
+  // Prepare chart data with colors
+  const chartData = categoryBreakdown.map((cat, index) => ({
+    ...cat,
+    color: COLORS[index % COLORS.length],
+  }));
 
   return (
     <div className="min-h-screen pb-24">
@@ -150,7 +185,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             <p className="font-serif text-2xl text-ledger-income tabular-nums">
               {formatCurrency(displayIncome)}
             </p>
-            <p className="text-ledger-text-secondary text-xs mt-1">vs last month</p>
+            <p className="text-ledger-text-secondary text-xs mt-1">this month</p>
           </Card>
 
           {/* Expense Card */}
@@ -172,7 +207,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             <p className="font-serif text-2xl text-ledger-expense tabular-nums">
               {formatCurrency(displayExpense)}
             </p>
-            <p className="text-ledger-text-secondary text-xs mt-1">vs last month</p>
+            <p className="text-ledger-text-secondary text-xs mt-1">this month</p>
           </Card>
 
           {/* Balance Card */}
@@ -211,35 +246,41 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               SPENDING BY CATEGORY
             </h3>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={2}
-                    dataKey="amount"
-                  >
-                    {categoryBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#141f1c',
-                      border: '1px solid rgba(245, 243, 239, 0.08)',
-                      borderRadius: '8px',
-                      color: '#f5f3ef',
-                    }}
-                    formatter={(value: number) => formatCurrency(value)}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={2}
+                      dataKey="amount"
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#141f1c',
+                        border: '1px solid rgba(245, 243, 239, 0.08)',
+                        borderRadius: '8px',
+                        color: '#f5f3ef',
+                      }}
+                      formatter={(value: number) => formatCurrency(value)}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-ledger-text-secondary">
+                  No expense data yet
+                </div>
+              )}
             </div>
             <div className="flex flex-wrap gap-3 mt-4 justify-center">
-              {categoryBreakdown.slice(0, 4).map((cat) => (
+              {chartData.slice(0, 4).map((cat) => (
                 <div key={cat.name} className="flex items-center gap-1.5">
                   <div 
                     className="w-2 h-2 rounded-full" 
@@ -257,30 +298,36 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               MONTHLY TREND
             </h3>
             <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData}>
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#a8b5b0', fontSize: 11 }}
-                  />
-                  <YAxis 
-                    hide
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#141f1c',
-                      border: '1px solid rgba(245, 243, 239, 0.08)',
-                      borderRadius: '8px',
-                      color: '#f5f3ef',
-                    }}
-                    formatter={(value: number) => formatCurrency(value)}
-                  />
-                  <Bar dataKey="income" fill="#5a9a6e" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="expense" fill="#c75b5b" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {monthlyData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={monthlyData}>
+                    <XAxis 
+                      dataKey="month" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#a8b5b0', fontSize: 11 }}
+                    />
+                    <YAxis 
+                      hide
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#141f1c',
+                        border: '1px solid rgba(245, 243, 239, 0.08)',
+                        borderRadius: '8px',
+                        color: '#f5f3ef',
+                      }}
+                      formatter={(value: number) => formatCurrency(value)}
+                    />
+                    <Bar dataKey="income" fill="#5a9a6e" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expense" fill="#c75b5b" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-ledger-text-secondary">
+                  No monthly data yet
+                </div>
+              )}
             </div>
             <div className="flex gap-4 mt-4 justify-center">
               <div className="flex items-center gap-1.5">
@@ -317,31 +364,37 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           </div>
           
           <Card className="bg-ledger-surface border-ledger-border overflow-hidden">
-            {recentTransactions.map((transaction, index) => (
-              <div
-                key={transaction.id}
-                className={`
-                  flex items-center justify-between p-4 transaction-item cursor-pointer
-                  ${index !== recentTransactions.length - 1 ? 'border-b border-ledger-border' : ''}
-                `}
-                onClick={() => onNavigate('transactions')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-ledger-bg flex items-center justify-center text-lg">
-                    {getCategoryIcon(transaction.category)}
+            {recentTransactions.length > 0 ? (
+              recentTransactions.map((transaction, index) => (
+                <div
+                  key={transaction.id}
+                  className={`
+                    flex items-center justify-between p-4 transaction-item cursor-pointer
+                    ${index !== recentTransactions.length - 1 ? 'border-b border-ledger-border' : ''}
+                  `}
+                  onClick={() => onNavigate('transactions')}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-ledger-bg flex items-center justify-center text-lg">
+                      {getCategoryIcon(transaction.category)}
+                    </div>
+                    <div>
+                      <p className="text-ledger-text text-sm font-medium">{transaction.category}</p>
+                      <p className="text-ledger-text-secondary text-xs">{formatDate(transaction.date)}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-ledger-text text-sm font-medium">{transaction.category}</p>
-                    <p className="text-ledger-text-secondary text-xs">{formatDate(transaction.date)}</p>
-                  </div>
+                  <p className={`tabular-nums font-medium ${
+                    transaction.type === 'income' ? 'text-ledger-income' : 'text-ledger-expense'
+                  }`}>
+                    {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                  </p>
                 </div>
-                <p className={`tabular-nums font-medium ${
-                  transaction.type === 'income' ? 'text-ledger-income' : 'text-ledger-expense'
-                }`}>
-                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                </p>
+              ))
+            ) : (
+              <div className="p-8 text-center text-ledger-text-secondary">
+                No transactions yet. <button onClick={() => onNavigate('add')} className="text-gold hover:underline">Add one now</button>
               </div>
-            ))}
+            )}
           </Card>
         </div>
       </div>
