@@ -22,7 +22,7 @@ export interface DbTransaction {
   amount: number;
   category: string;
   category_id: string;
-  type: 'income' | 'expense';
+  transaction_type: 'income' | 'expense';
   notes: string;
   created_at: string;
 }
