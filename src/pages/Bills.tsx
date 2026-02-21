@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Home, Zap, Wifi, Smartphone, Dumbbell, Film, Check, AlertCircle, Clock } from 'lucide-react';
 import { useData } from '@/contexts/DataContext';
 import { toast } from 'sonner';
+import { AddBillDialog, AddBillButton } from '@/components/AddBillDialog';
 // Bill type is used implicitly through useData
 
 const formatCurrency = (amount: number) => {
@@ -59,6 +60,7 @@ export function BillsPage() {
   const { bills, toggleBillPaid, refreshBills, isLoading } = useData();
   const [isVisible, setIsVisible] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -111,12 +113,17 @@ export function BillsPage() {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <h1 className="font-serif text-2xl md:text-3xl text-ledger-text tracking-wider mb-2">
-            RECURRING BILLS
-          </h1>
-          <p className="text-ledger-text-secondary text-sm">
-            Track your monthly obligations
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-serif text-2xl md:text-3xl text-ledger-text tracking-wider mb-2">
+                RECURRING BILLS
+              </h1>
+              <p className="text-ledger-text-secondary text-sm">
+                Track your monthly obligations
+              </p>
+            </div>
+            <AddBillButton onClick={() => setIsAddDialogOpen(true)} />
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -249,6 +256,8 @@ export function BillsPage() {
           )}
         </div>
       </div>
+
+      <AddBillDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} />
     </div>
   );
 }
