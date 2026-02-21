@@ -91,8 +91,10 @@ export function TransactionsPage() {
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
-      const matchesSearch = t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          t.notes.toLowerCase().includes(searchQuery.toLowerCase());
+      const categoryStr = String(t.category || '');
+      const notesStr = String(t.notes || '');
+      const matchesSearch = categoryStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          notesStr.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilter = filter === 'all' || t.type === filter;
       return matchesSearch && matchesFilter;
     });
