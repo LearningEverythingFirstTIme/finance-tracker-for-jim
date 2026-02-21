@@ -137,7 +137,10 @@ export async function getMonthlySummary(month: string): Promise<{
   balance: number;
 }> {
   const startOfMonth = `${month}-01`;
-  const endOfMonth = `${month}-31`;
+  // Get last day of month properly
+  const [year, monthNum] = month.split('-').map(Number);
+  const lastDay = new Date(year, monthNum, 0).getDate();
+  const endOfMonth = `${month}-${lastDay}`;
 
   const { data, error } = await supabase
     .from('transactions')
