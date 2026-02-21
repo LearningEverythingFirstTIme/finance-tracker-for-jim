@@ -136,11 +136,10 @@ export async function getMonthlySummary(month: string): Promise<{
   expense: number;
   balance: number;
 }> {
-  const startOfMonth = `${month}-01`;
-  // Get last day of month properly
+  // Parse month (format: YYYY-MM)
   const [year, monthNum] = month.split('-').map(Number);
-  const lastDay = new Date(year, monthNum, 0).getDate();
-  const endOfMonth = `${month}-${lastDay}`;
+  const startOfMonth = new Date(year, monthNum - 1, 1).toISOString().split('T')[0];
+  const endOfMonth = new Date(year, monthNum, 0).toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('transactions')
@@ -178,12 +177,16 @@ export async function getCategoryBreakdown(
   startDate: string, 
   endDate: string
 ): Promise<CategoryData[]> {
+  // Use ISO date format for Supabase
+  const start = new Date(startDate).toISOString().split('T')[0];
+  const end = new Date(endDate).toISOString().split('T')[0];
+  
   const { data, error } = await supabase
     .from('transactions')
     .select('category, amount')
     .eq('type', 'expense')
-    .gte('date', startDate)
-    .lte('date', endDate);
+    .gte('date', start)
+    .lte('date', end);
 
   if (error) {
     console.error('Error fetching category breakdown:', error);
@@ -215,8 +218,8 @@ export interface MonthlyData {
 }
 
 export async function getMonthlyData(year: number): Promise<MonthlyData[]> {
-  const startDate = `${year}-01-01`;
-  const endDate = `${year}-12-31`;
+  const startDate = new Date(`${year}-01-01`).toISOString().split('T')[0];
+  const endDate = new Date(`${year}-12-31`).toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('transactions')
