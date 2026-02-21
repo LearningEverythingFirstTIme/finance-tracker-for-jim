@@ -59,6 +59,7 @@ export function AddBillDialog({ open, onOpenChange }: AddBillDialogProps) {
         category: formData.category,
         isRecurring: true,
         frequency: formData.frequency as 'weekly' | 'monthly' | 'yearly',
+        status: 'pending',
       });
       
       toast.success('Bill added successfully');
