@@ -38,20 +38,21 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Refined Ledger Custom Colors
-        ledger: {
-          bg: '#0c1412',
-          surface: '#141f1c',
-          gold: '#c9a227',
-          'gold-dim': '#9a7b1a',
-          income: '#5a9a6e',
-          expense: '#c75b5b',
-          text: '#f5f3ef',
-          'text-secondary': '#a8b5b0',
+        // Finance Blue Custom Colors
+        finance: {
+          bg: '#0a0f1a',
+          surface: '#111827',
+          'surface-elevated': '#1a2234',
+          primary: '#3b82f6',
+          'primary-bright': '#60a5fa',
+          'primary-dim': '#2563eb',
+          income: '#10b981',
+          expense: '#ef4444',
+          text: '#f1f5f9',
+          'text-secondary': '#94a3b8',
         },
       },
       fontFamily: {
-        serif: ['Cinzel', 'Georgia', 'serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
@@ -64,8 +65,8 @@ module.exports = {
       boxShadow: {
         xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
         'card': '0 18px 50px rgba(0, 0, 0, 0.45)',
-        'gold': '0 0 40px rgba(201, 162, 39, 0.15)',
-        'gold-sm': '0 0 20px rgba(201, 162, 39, 0.1)',
+        'blue': '0 0 40px rgba(59, 130, 246, 0.12)',
+        'blue-sm': '0 0 20px rgba(59, 130, 246, 0.08)',
       },
       keyframes: {
         "accordion-down": {

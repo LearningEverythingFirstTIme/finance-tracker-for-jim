@@ -81,25 +81,25 @@ export function AddBillDialog({ open, onOpenChange }: AddBillDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-ledger-surface border-ledger-border text-ledger-text max-w-md">
+      <DialogContent className="bg-finance-surface border-finance-text-secondary/10 text-finance-text max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl tracking-wider">ADD RECURRING BILL</DialogTitle>
+          <DialogTitle className="font-semibold text-xl tracking-tight">Add Recurring Bill</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-ledger-text-secondary">Bill Name</Label>
+            <Label htmlFor="name" className="text-finance-text-secondary">Bill Name</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Rent, Electric, Netflix"
-              className="bg-ledger-bg border-ledger-border text-ledger-text"
+              className="bg-finance-bg border-finance-text-secondary/10 text-finance-text focus:border-finance-primary focus:ring-finance-primary/20"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount" className="text-ledger-text-secondary">Amount</Label>
+            <Label htmlFor="amount" className="text-finance-text-secondary">Amount</Label>
             <Input
               id="amount"
               type="number"
@@ -107,36 +107,36 @@ export function AddBillDialog({ open, onOpenChange }: AddBillDialogProps) {
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               placeholder="0.00"
-              className="bg-ledger-bg border-ledger-border text-ledger-text"
+              className="bg-finance-bg border-finance-text-secondary/10 text-finance-text focus:border-finance-primary focus:ring-finance-primary/20"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dueDate" className="text-ledger-text-secondary">Due Date</Label>
+            <Label htmlFor="dueDate" className="text-finance-text-secondary">Due Date</Label>
             <Input
               id="dueDate"
               type="date"
               value={formData.dueDate}
               onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-              className="bg-ledger-bg border-ledger-border text-ledger-text"
+              className="bg-finance-bg border-finance-text-secondary/10 text-finance-text focus:border-finance-primary focus:ring-finance-primary/20"
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-ledger-text-secondary">Category</Label>
+            <Label className="text-finance-text-secondary">Category</Label>
             <Select
               value={formData.category}
               onValueChange={(value) => setFormData({ ...formData, category: value })}
             >
-              <SelectTrigger className="bg-ledger-bg border-ledger-border text-ledger-text">
+              <SelectTrigger className="bg-finance-bg border-finance-text-secondary/10 text-finance-text focus:border-finance-primary focus:ring-finance-primary/20">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
-              <SelectContent className="bg-ledger-surface border-ledger-border">
+              <SelectContent className="bg-finance-surface border-finance-text-secondary/10">
                 {CATEGORIES.map((cat) => (
                   <SelectItem 
                     key={cat} 
                     value={cat}
-                    className="text-ledger-text focus:bg-ledger-bg focus:text-ledger-text"
+                    className="text-finance-text focus:bg-finance-bg focus:text-finance-text"
                   >
                     {cat}
                   </SelectItem>
@@ -146,20 +146,20 @@ export function AddBillDialog({ open, onOpenChange }: AddBillDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-ledger-text-secondary">Frequency</Label>
+            <Label className="text-finance-text-secondary">Frequency</Label>
             <Select
               value={formData.frequency}
               onValueChange={(value) => setFormData({ ...formData, frequency: value })}
             >
-              <SelectTrigger className="bg-ledger-bg border-ledger-border text-ledger-text">
+              <SelectTrigger className="bg-finance-bg border-finance-text-secondary/10 text-finance-text focus:border-finance-primary focus:ring-finance-primary/20">
                 <SelectValue placeholder="Select frequency" />
               </SelectTrigger>
-              <SelectContent className="bg-ledger-surface border-ledger-border">
+              <SelectContent className="bg-finance-surface border-finance-text-secondary/10">
                 {FREQUENCIES.map((freq) => (
                   <SelectItem 
                     key={freq.value} 
                     value={freq.value}
-                    className="text-ledger-text focus:bg-ledger-bg focus:text-ledger-text"
+                    className="text-finance-text focus:bg-finance-bg focus:text-finance-text"
                   >
                     {freq.label}
                   </SelectItem>
@@ -173,14 +173,14 @@ export function AddBillDialog({ open, onOpenChange }: AddBillDialogProps) {
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 border-ledger-border text-ledger-text hover:bg-ledger-bg"
+              className="flex-1 border-finance-text-secondary/10 text-finance-text hover:bg-finance-bg"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-gold/10 text-gold hover:bg-gold/20 border border-gold/30"
+              className="flex-1 bg-finance-primary/10 text-finance-primary hover:bg-finance-primary/20 border border-finance-primary/30"
             >
               {isSubmitting ? (
                 <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -199,7 +199,7 @@ export function AddBillButton({ onClick }: { onClick: () => void }) {
   return (
     <Button
       onClick={onClick}
-      className="bg-gold/10 text-gold hover:bg-gold/20 border border-gold/30"
+      className="bg-finance-primary/10 text-finance-primary hover:bg-finance-primary/20 border border-finance-primary/30"
     >
       <Plus className="w-4 h-4 mr-2" />
       Add Bill

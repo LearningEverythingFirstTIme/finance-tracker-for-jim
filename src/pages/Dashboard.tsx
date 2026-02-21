@@ -32,7 +32,8 @@ const formatDate = (dateStr: string) => {
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
 };
 
-const COLORS = ['#c9a227', '#5a9a6e', '#a8b5b0', '#7a8b85', '#c75b5b', '#5a6a65'];
+// Updated chart colors for blue theme
+const COLORS = ['#3b82f6', '#10b981', '#60a5fa', '#8b5cf6', '#ef4444', '#94a3b8'];
 
 export function Dashboard({ onNavigate }: DashboardProps) {
   const { 
@@ -128,29 +129,29 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
         `}
       >
-        {/* Gold gradient border */}
+        {/* Blue gradient border */}
         <div 
           className="absolute bottom-0 left-0 right-0 h-px"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(201, 162, 39, 0.5) 50%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.5) 50%, transparent 100%)',
           }}
         />
         
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <p className="text-ledger-text-secondary text-xs uppercase tracking-wider mb-1">
+              <p className="text-finance-text-secondary text-xs uppercase tracking-wider mb-1">
                 {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
               </p>
-              <h1 className="font-serif text-xl md:text-2xl text-ledger-text tracking-wider">
-                FINANCIAL OVERVIEW
+              <h1 className="font-semibold text-xl md:text-2xl text-finance-text tracking-tight">
+                Financial Overview
               </h1>
             </div>
             <div className="text-left md:text-right">
-              <p className="text-ledger-text-secondary text-xs uppercase tracking-wider mb-1">
+              <p className="text-finance-text-secondary text-xs uppercase tracking-wider mb-1">
                 Net Balance
               </p>
-              <p className="font-serif text-3xl md:text-4xl text-gold tabular-nums">
+              <p className="font-semibold text-3xl md:text-4xl text-finance-primary tabular-nums">
                 {formatCurrency(displayBalance)}
               </p>
             </div>
@@ -168,66 +169,66 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Income Card */}
           <Card 
-            className="bg-ledger-surface border-ledger-border p-5 card-lift relative overflow-hidden"
-            style={{ borderTop: '2px solid #5a9a6e' }}
+            className="bg-finance-surface border-finance-text-secondary/10 p-5 card-lift relative overflow-hidden"
+            style={{ borderTop: '2px solid #10b981' }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-ledger-income/10 flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-ledger-income" />
+                <div className="w-8 h-8 rounded-full bg-finance-income/10 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-finance-income" />
                 </div>
-                <span className="text-ledger-text-secondary text-sm">Income</span>
+                <span className="text-finance-text-secondary text-sm">Income</span>
               </div>
-              <span className="text-ledger-income text-xs flex items-center gap-1">
+              <span className="text-finance-income text-xs flex items-center gap-1">
                 +8% <ArrowUpRight className="w-3 h-3" />
               </span>
             </div>
-            <p className="font-serif text-2xl text-ledger-income tabular-nums">
+            <p className="font-semibold text-2xl text-finance-income tabular-nums">
               {formatCurrency(displayIncome)}
             </p>
-            <p className="text-ledger-text-secondary text-xs mt-1">this month</p>
+            <p className="text-finance-text-secondary text-xs mt-1">this month</p>
           </Card>
 
           {/* Expense Card */}
           <Card 
-            className="bg-ledger-surface border-ledger-border p-5 card-lift relative overflow-hidden"
-            style={{ borderTop: '2px solid #c75b5b' }}
+            className="bg-finance-surface border-finance-text-secondary/10 p-5 card-lift relative overflow-hidden"
+            style={{ borderTop: '2px solid #ef4444' }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-ledger-expense/10 flex items-center justify-center">
-                  <TrendingDown className="w-4 h-4 text-ledger-expense" />
+                <div className="w-8 h-8 rounded-full bg-finance-expense/10 flex items-center justify-center">
+                  <TrendingDown className="w-4 h-4 text-finance-expense" />
                 </div>
-                <span className="text-ledger-text-secondary text-sm">Expenses</span>
+                <span className="text-finance-text-secondary text-sm">Expenses</span>
               </div>
-              <span className="text-ledger-income text-xs flex items-center gap-1">
+              <span className="text-finance-income text-xs flex items-center gap-1">
                 -3% <ArrowUpRight className="w-3 h-3" />
               </span>
             </div>
-            <p className="font-serif text-2xl text-ledger-expense tabular-nums">
+            <p className="font-semibold text-2xl text-finance-expense tabular-nums">
               {formatCurrency(displayExpense)}
             </p>
-            <p className="text-ledger-text-secondary text-xs mt-1">this month</p>
+            <p className="text-finance-text-secondary text-xs mt-1">this month</p>
           </Card>
 
           {/* Balance Card */}
           <Card 
-            className="bg-ledger-surface border-ledger-border p-5 card-lift relative overflow-hidden"
-            style={{ borderTop: '2px solid #c9a227' }}
+            className="bg-finance-surface border-finance-text-secondary/10 p-5 card-lift relative overflow-hidden"
+            style={{ borderTop: '2px solid #3b82f6' }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center">
-                  <Wallet className="w-4 h-4 text-gold" />
+                <div className="w-8 h-8 rounded-full bg-finance-primary/10 flex items-center justify-center">
+                  <Wallet className="w-4 h-4 text-finance-primary" />
                 </div>
-                <span className="text-ledger-text-secondary text-sm">Balance</span>
+                <span className="text-finance-text-secondary text-sm">Balance</span>
               </div>
-              <span className="text-gold text-xs">On track</span>
+              <span className="text-finance-primary text-xs">On track</span>
             </div>
-            <p className="font-serif text-2xl text-gold tabular-nums">
+            <p className="font-semibold text-2xl text-finance-primary tabular-nums">
               {formatCurrency(displayBalance)}
             </p>
-            <p className="text-ledger-text-secondary text-xs mt-1">net position</p>
+            <p className="text-finance-text-secondary text-xs mt-1">net position</p>
           </Card>
         </div>
       </div>
@@ -241,9 +242,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       >
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Category Breakdown */}
-          <Card className="bg-ledger-surface border-ledger-border p-5">
-            <h3 className="font-serif text-sm text-ledger-text tracking-wider mb-4">
-              SPENDING BY CATEGORY
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5">
+            <h3 className="font-semibold text-sm text-finance-text tracking-tight mb-4">
+              Spending by Category
             </h3>
             <div className="h-64">
               {chartData.length > 0 ? (
@@ -264,17 +265,17 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#141f1c',
-                        border: '1px solid rgba(245, 243, 239, 0.08)',
+                        backgroundColor: '#111827',
+                        border: '1px solid rgba(148, 163, 184, 0.12)',
                         borderRadius: '8px',
-                        color: '#f5f3ef',
+                        color: '#f1f5f9',
                       }}
                       formatter={(value: number) => formatCurrency(value)}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-ledger-text-secondary">
+                <div className="h-full flex items-center justify-center text-finance-text-secondary">
                   No expense data yet
                 </div>
               )}
@@ -286,16 +287,16 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                     className="w-2 h-2 rounded-full" 
                     style={{ backgroundColor: cat.color }}
                   />
-                  <span className="text-ledger-text-secondary text-xs">{cat.name}</span>
+                  <span className="text-finance-text-secondary text-xs">{cat.name}</span>
                 </div>
               ))}
             </div>
           </Card>
 
           {/* Monthly Trend */}
-          <Card className="bg-ledger-surface border-ledger-border p-5">
-            <h3 className="font-serif text-sm text-ledger-text tracking-wider mb-4">
-              MONTHLY TREND
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5">
+            <h3 className="font-semibold text-sm text-finance-text tracking-tight mb-4">
+              Monthly Trend
             </h3>
             <div className="h-64">
               {monthlyData.length > 0 ? (
@@ -305,38 +306,38 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                       dataKey="month" 
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#a8b5b0', fontSize: 11 }}
+                      tick={{ fill: '#94a3b8', fontSize: 11 }}
                     />
                     <YAxis 
                       hide
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#141f1c',
-                        border: '1px solid rgba(245, 243, 239, 0.08)',
+                        backgroundColor: '#111827',
+                        border: '1px solid rgba(148, 163, 184, 0.12)',
                         borderRadius: '8px',
-                        color: '#f5f3ef',
+                        color: '#f1f5f9',
                       }}
                       formatter={(value: number) => formatCurrency(value)}
                     />
-                    <Bar dataKey="income" fill="#5a9a6e" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="expense" fill="#c75b5b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="income" fill="#10b981" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expense" fill="#ef4444" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-ledger-text-secondary">
+                <div className="h-full flex items-center justify-center text-finance-text-secondary">
                   No monthly data yet
                 </div>
               )}
             </div>
             <div className="flex gap-4 mt-4 justify-center">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-ledger-income" />
-                <span className="text-ledger-text-secondary text-xs">Income</span>
+                <div className="w-2 h-2 rounded-full bg-finance-income" />
+                <span className="text-finance-text-secondary text-xs">Income</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-ledger-expense" />
-                <span className="text-ledger-text-secondary text-xs">Expense</span>
+                <div className="w-2 h-2 rounded-full bg-finance-expense" />
+                <span className="text-finance-text-secondary text-xs">Expense</span>
               </div>
             </div>
           </Card>
@@ -352,47 +353,47 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-serif text-sm text-ledger-text tracking-wider">
-              RECENT TRANSACTIONS
+            <h3 className="font-semibold text-sm text-finance-text tracking-tight">
+              Recent Transactions
             </h3>
             <button 
               onClick={() => onNavigate('transactions')}
-              className="text-gold text-xs hover:underline"
+              className="text-finance-primary text-xs hover:text-finance-primary-bright transition-colors"
             >
               View All
             </button>
           </div>
           
-          <Card className="bg-ledger-surface border-ledger-border overflow-hidden">
+          <Card className="bg-finance-surface border-finance-text-secondary/10 overflow-hidden">
             {recentTransactions.length > 0 ? (
               recentTransactions.map((transaction, index) => (
                 <div
                   key={transaction.id}
                   className={`
                     flex items-center justify-between p-4 transaction-item cursor-pointer
-                    ${index !== recentTransactions.length - 1 ? 'border-b border-ledger-border' : ''}
+                    ${index !== recentTransactions.length - 1 ? 'border-b border-finance-text-secondary/10' : ''}
                   `}
                   onClick={() => onNavigate('transactions')}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-ledger-bg flex items-center justify-center text-lg">
+                    <div className="w-10 h-10 rounded-full bg-finance-bg flex items-center justify-center text-lg">
                       {getCategoryIcon(transaction.category)}
                     </div>
                     <div>
-                      <p className="text-ledger-text text-sm font-medium">{transaction.category}</p>
-                      <p className="text-ledger-text-secondary text-xs">{formatDate(transaction.date)}</p>
+                      <p className="text-finance-text text-sm font-medium">{transaction.category}</p>
+                      <p className="text-finance-text-secondary text-xs">{formatDate(transaction.date)}</p>
                     </div>
                   </div>
                   <p className={`tabular-nums font-medium ${
-                    transaction.type === 'income' ? 'text-ledger-income' : 'text-ledger-expense'
+                    transaction.type === 'income' ? 'text-finance-income' : 'text-finance-expense'
                   }`}>
                     {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                   </p>
                 </div>
               ))
             ) : (
-              <div className="p-8 text-center text-ledger-text-secondary">
-                No transactions yet. <button onClick={() => onNavigate('add')} className="text-gold hover:underline">Add one now</button>
+              <div className="p-8 text-center text-finance-text-secondary">
+                No transactions yet. <button onClick={() => onNavigate('add')} className="text-finance-primary hover:text-finance-primary-bright transition-colors">Add one now</button>
               </div>
             )}
           </Card>

@@ -178,10 +178,10 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <h1 className="font-serif text-2xl md:text-3xl text-ledger-text tracking-wider mb-2">
-            IMPORT CSV
+          <h1 className="font-semibold text-2xl md:text-3xl text-finance-text tracking-tight mb-2">
+            Import CSV
           </h1>
-          <p className="text-ledger-text-secondary text-sm">
+          <p className="text-finance-text-secondary text-sm">
             Upload your bank statement or export file
           </p>
         </div>
@@ -201,18 +201,18 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
               className={`
                 border-2 border-dashed rounded-xl p-12 text-center transition-all duration-200
                 ${isDragging 
-                  ? 'border-gold bg-gold/5' 
-                  : 'border-ledger-border bg-ledger-surface hover:border-ledger-text-secondary/30'
+                  ? 'border-finance-primary bg-finance-primary/5' 
+                  : 'border-finance-text-secondary/10 bg-finance-surface hover:border-finance-text-secondary/30'
                 }
               `}
             >
-              <div className="w-16 h-16 rounded-full bg-ledger-bg flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-6 h-6 text-gold" />
+              <div className="w-16 h-16 rounded-full bg-finance-bg flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-6 h-6 text-finance-primary" />
               </div>
-              <p className="text-ledger-text font-medium mb-2">
+              <p className="text-finance-text font-medium mb-2">
                 Drop your CSV file here
               </p>
-              <p className="text-ledger-text-secondary text-sm mb-4">
+              <p className="text-finance-text-secondary text-sm mb-4">
                 or click to browse
               </p>
               <input
@@ -226,29 +226,29 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
                 <Button
                   asChild
                   className="cursor-pointer"
-                  style={{ backgroundColor: '#c9a227', color: '#0c1412' }}
+                  style={{ backgroundColor: '#3b82f6', color: '#ffffff' }}
                 >
                   <span>Select File</span>
                 </Button>
               </label>
             </div>
           ) : (
-            <Card className="bg-ledger-surface border-ledger-border p-6">
+            <Card className="bg-finance-surface border-finance-text-secondary/10 p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-gold" />
+                  <div className="w-10 h-10 rounded-full bg-finance-primary/10 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-finance-primary" />
                   </div>
                   <div>
-                    <p className="text-ledger-text font-medium">{fileName}</p>
-                    <p className="text-ledger-text-secondary text-sm">
+                    <p className="text-finance-text font-medium">{fileName}</p>
+                    <p className="text-finance-text-secondary text-sm">
                       {parsedData.length} transactions found
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={clearFile}
-                  className="p-2 text-ledger-text-secondary hover:text-ledger-expense transition-colors"
+                  className="p-2 text-finance-text-secondary hover:text-finance-expense transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -257,29 +257,29 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
               {/* Preview */}
               {parsedData.length > 0 && (
                 <div className="mb-6">
-                  <p className="text-ledger-text-secondary text-xs uppercase tracking-wider mb-3">
+                  <p className="text-finance-text-secondary text-xs uppercase tracking-wider mb-3">
                     Preview
                   </p>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {parsedData.slice(0, 5).map((row, index) => (
                       <div 
                         key={index}
-                        className="flex items-center justify-between p-3 bg-ledger-bg rounded-lg"
+                        className="flex items-center justify-between p-3 bg-finance-bg rounded-lg"
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${row.type === 'income' ? 'bg-ledger-income' : 'bg-ledger-expense'}`} />
+                          <div className={`w-2 h-2 rounded-full ${row.type === 'income' ? 'bg-finance-income' : 'bg-finance-expense'}`} />
                           <div>
-                            <p className="text-ledger-text text-sm">{row.category}</p>
-                            <p className="text-ledger-text-secondary text-xs truncate max-w-[150px]">{row.description}</p>
+                            <p className="text-finance-text text-sm">{row.category}</p>
+                            <p className="text-finance-text-secondary text-xs truncate max-w-[150px]">{row.description}</p>
                           </div>
                         </div>
-                        <p className={`tabular-nums text-sm ${row.type === 'income' ? 'text-ledger-income' : 'text-ledger-expense'}`}>
+                        <p className={`tabular-nums text-sm ${row.type === 'income' ? 'text-finance-income' : 'text-finance-expense'}`}>
                           {row.type === 'income' ? '+' : '-'}${row.amount.toFixed(2)}
                         </p>
                       </div>
                     ))}
                     {parsedData.length > 5 && (
-                      <p className="text-ledger-text-secondary text-xs text-center py-2">
+                      <p className="text-finance-text-secondary text-xs text-center py-2">
                         +{parsedData.length - 5} more transactions
                       </p>
                     )}
@@ -288,9 +288,9 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
               )}
 
               {/* Auto-categorize notice */}
-              <div className="flex items-start gap-2 p-3 bg-gold/5 border border-gold/20 rounded-lg mb-6">
-                <Check className="w-4 h-4 text-gold mt-0.5 flex-shrink-0" />
-                <p className="text-ledger-text-secondary text-sm">
+              <div className="flex items-start gap-2 p-3 bg-finance-primary/5 border border-finance-primary/20 rounded-lg mb-6">
+                <Check className="w-4 h-4 text-finance-primary mt-0.5 flex-shrink-0" />
+                <p className="text-finance-text-secondary text-sm">
                   Transactions will be auto-categorized based on description. You can edit them later.
                 </p>
               </div>
@@ -301,13 +301,13 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
                 disabled={isImporting || parsedData.length === 0}
                 className="w-full"
                 style={{ 
-                  backgroundColor: isImporting || parsedData.length === 0 ? 'rgba(201, 162, 39, 0.3)' : '#c9a227',
-                  color: '#0c1412'
+                  backgroundColor: isImporting || parsedData.length === 0 ? 'rgba(59, 130, 246, 0.3)' : '#3b82f6',
+                  color: '#ffffff'
                 }}
               >
                 {isImporting ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-ledger-bg/30 border-t-ledger-bg rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Importing...
                   </span>
                 ) : (
@@ -328,16 +328,16 @@ export function ImportCSV({ onNavigate }: ImportCSVProps) {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <Card className="bg-ledger-surface border-ledger-border p-5">
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-finance-primary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-ledger-text font-medium mb-2">Expected CSV Format</p>
-                <p className="text-ledger-text-secondary text-sm mb-3">
+                <p className="text-finance-text font-medium mb-2">Expected CSV Format</p>
+                <p className="text-finance-text-secondary text-sm mb-3">
                   Your CSV should include columns for date, amount, and description. 
                   Most bank exports work automatically.
                 </p>
-                <code className="block bg-ledger-bg p-3 rounded-lg text-ledger-text-secondary text-xs">
+                <code className="block bg-finance-bg p-3 rounded-lg text-finance-text-secondary text-xs">
                   Date,Amount,Description<br/>
                   2026-02-20,-45.50,Grocery Store<br/>
                   2026-02-19,1200.00,Freelance Payment

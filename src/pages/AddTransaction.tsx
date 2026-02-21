@@ -92,7 +92,7 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
       <div 
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(201, 162, 39, 0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%)',
         }}
       />
 
@@ -104,10 +104,10 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <h1 className="font-serif text-2xl md:text-3xl text-ledger-text tracking-wider mb-2">
-            LOG A TRANSACTION
+          <h1 className="font-semibold text-2xl md:text-3xl text-finance-text tracking-tight mb-2">
+            Log a Transaction
           </h1>
-          <p className="text-ledger-text-secondary text-sm">
+          <p className="text-finance-text-secondary text-sm">
             Capture income or spending in seconds. Clear notes make reports meaningful.
           </p>
         </div>
@@ -115,24 +115,24 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
         {/* Form Card */}
         <Card 
           className={`
-            bg-ledger-surface border-ledger-border p-6 md:p-8 transition-all duration-700 ease-out delay-100
+            bg-finance-surface border-finance-text-secondary/10 p-6 md:p-8 transition-all duration-700 ease-out delay-100
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Amount Input */}
             <div className="space-y-2">
-              <Label className="text-ledger-text-secondary text-xs uppercase tracking-wider">
+              <Label className="text-finance-text-secondary text-xs uppercase tracking-wider">
                 Amount
               </Label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gold text-2xl font-serif">$</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-finance-primary text-2xl font-semibold">$</span>
                 <Input
                   type="text"
                   value={amount}
                   onChange={handleAmountChange}
                   placeholder="0.00"
-                  className="pl-10 py-6 text-3xl font-serif bg-ledger-bg border-ledger-border text-ledger-text placeholder:text-ledger-text-secondary/30 focus:border-gold focus:ring-gold/20 tabular-nums"
+                  className="pl-10 py-6 text-3xl font-semibold bg-finance-bg border-finance-text-secondary/10 text-finance-text placeholder:text-finance-text-secondary/30 focus:border-finance-primary focus:ring-finance-primary/20 tabular-nums"
                   required
                 />
               </div>
@@ -140,10 +140,10 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
 
             {/* Type Toggle */}
             <div className="space-y-2">
-              <Label className="text-ledger-text-secondary text-xs uppercase tracking-wider">
+              <Label className="text-finance-text-secondary text-xs uppercase tracking-wider">
                 Type
               </Label>
-              <div className="flex gap-2 p-1 bg-ledger-bg rounded-lg">
+              <div className="flex gap-2 p-1 bg-finance-bg rounded-lg">
                 <button
                   type="button"
                   onClick={() => {
@@ -153,8 +153,8 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
                   className={`
                     flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-200
                     ${type === 'expense' 
-                      ? 'bg-ledger-expense/20 text-ledger-expense' 
-                      : 'text-ledger-text-secondary hover:text-ledger-text'
+                      ? 'bg-finance-expense/20 text-finance-expense' 
+                      : 'text-finance-text-secondary hover:text-finance-text'
                     }
                   `}
                 >
@@ -169,8 +169,8 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
                   className={`
                     flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all duration-200
                     ${type === 'income' 
-                      ? 'bg-ledger-income/20 text-ledger-income' 
-                      : 'text-ledger-text-secondary hover:text-ledger-text'
+                      ? 'bg-finance-income/20 text-finance-income' 
+                      : 'text-finance-text-secondary hover:text-finance-text'
                     }
                   `}
                 >
@@ -181,7 +181,7 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
 
             {/* Category Chips */}
             <div className="space-y-2">
-              <Label className="text-ledger-text-secondary text-xs uppercase tracking-wider">
+              <Label className="text-finance-text-secondary text-xs uppercase tracking-wider">
                 Category
               </Label>
               <div className="flex flex-wrap gap-2">
@@ -195,8 +195,8 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
                       className={`
                         flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all duration-200
                         ${category === cat.id
-                          ? 'border-gold bg-gold/10 text-gold'
-                          : 'border-ledger-border bg-ledger-bg text-ledger-text-secondary hover:border-ledger-text-secondary/30 hover:text-ledger-text'
+                          ? 'border-finance-primary bg-finance-primary/10 text-finance-primary'
+                          : 'border-finance-text-secondary/10 bg-finance-bg text-finance-text-secondary hover:border-finance-text-secondary/30 hover:text-finance-text'
                         }
                       `}
                     >
@@ -210,26 +210,26 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
 
             {/* Date Picker */}
             <div className="space-y-2">
-              <Label className="text-ledger-text-secondary text-xs uppercase tracking-wider">
+              <Label className="text-finance-text-secondary text-xs uppercase tracking-wider">
                 Date
               </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="w-full flex items-center justify-between px-4 py-3 bg-ledger-bg border border-ledger-border rounded-md text-ledger-text hover:border-ledger-text-secondary/30 transition-colors"
+                    className="w-full flex items-center justify-between px-4 py-3 bg-finance-bg border border-finance-text-secondary/10 rounded-md text-finance-text hover:border-finance-text-secondary/30 transition-colors"
                   >
                     <span>{format(date, 'MMMM d, yyyy')}</span>
-                    <CalendarIcon className="w-4 h-4 text-ledger-text-secondary" />
+                    <CalendarIcon className="w-4 h-4 text-finance-text-secondary" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-ledger-surface border-ledger-border" align="start">
+                <PopoverContent className="w-auto p-0 bg-finance-surface border-finance-text-secondary/10" align="start">
                   <Calendar
                     mode="single"
                     selected={date}
                     onSelect={(d) => d && setDate(d)}
                     initialFocus
-                    className="bg-ledger-surface"
+                    className="bg-finance-surface"
                   />
                 </PopoverContent>
               </Popover>
@@ -237,7 +237,7 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label className="text-ledger-text-secondary text-xs uppercase tracking-wider">
+              <Label className="text-finance-text-secondary text-xs uppercase tracking-wider">
                 Note
               </Label>
               <textarea
@@ -245,7 +245,7 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add a note..."
                 rows={3}
-                className="w-full px-4 py-3 bg-ledger-bg border border-ledger-border rounded-md text-ledger-text placeholder:text-ledger-text-secondary/30 focus:border-gold focus:ring-1 focus:ring-gold/20 focus:outline-none resize-none transition-colors"
+                className="w-full px-4 py-3 bg-finance-bg border border-finance-text-secondary/10 rounded-md text-finance-text placeholder:text-finance-text-secondary/30 focus:border-finance-primary focus:ring-1 focus:ring-finance-primary/20 focus:outline-none resize-none transition-colors"
               />
             </div>
 
@@ -255,13 +255,13 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
               disabled={!amount || !category || isSubmitting || isLoading}
               className="w-full py-6 font-medium transition-all duration-200 disabled:opacity-50"
               style={{ 
-                backgroundColor: !amount || !category ? 'rgba(201, 162, 39, 0.3)' : '#c9a227',
-                color: '#0c1412'
+                backgroundColor: !amount || !category ? 'rgba(59, 130, 246, 0.3)' : '#3b82f6',
+                color: '#ffffff'
               }}
             >
               {isSubmitting || isLoading ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-ledger-bg/30 border-t-ledger-bg rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Saving...
                 </span>
               ) : (
@@ -273,7 +273,7 @@ export function AddTransaction({ onNavigate }: AddTransactionProps) {
             <button
               type="button"
               onClick={() => onNavigate('import')}
-              className="w-full flex items-center justify-center gap-2 text-ledger-text-secondary text-sm hover:text-gold transition-colors"
+              className="w-full flex items-center justify-center gap-2 text-finance-text-secondary text-sm hover:text-finance-primary transition-colors"
             >
               <Upload className="w-4 h-4" />
               Import CSV

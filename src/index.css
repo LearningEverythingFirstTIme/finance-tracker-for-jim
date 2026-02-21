@@ -4,45 +4,48 @@
 
 @layer base {
   :root {
-    --background: 150 14% 5%;
-    --foreground: 40 20% 95%;
-    --card: 150 12% 8%;
-    --card-foreground: 40 20% 95%;
-    --popover: 150 12% 8%;
-    --popover-foreground: 40 20% 95%;
-    --primary: 43 62% 47%;
-    --primary-foreground: 150 14% 5%;
-    --secondary: 150 8% 15%;
-    --secondary-foreground: 40 20% 95%;
-    --muted: 150 8% 15%;
-    --muted-foreground: 140 8% 55%;
-    --accent: 43 62% 47%;
-    --accent-foreground: 150 14% 5%;
+    --background: 222 47% 5%;
+    --foreground: 210 20% 95%;
+    --card: 222 35% 8%;
+    --card-foreground: 210 20% 95%;
+    --popover: 222 35% 8%;
+    --popover-foreground: 210 20% 95%;
+    --primary: 217 70% 55%;
+    --primary-foreground: 222 47% 5%;
+    --secondary: 222 25% 15%;
+    --secondary-foreground: 210 20% 95%;
+    --muted: 222 25% 15%;
+    --muted-foreground: 215 15% 55%;
+    --accent: 217 70% 55%;
+    --accent-foreground: 222 47% 5%;
     --destructive: 0 45% 55%;
-    --destructive-foreground: 40 20% 95%;
-    --border: 140 8% 20%;
-    --input: 140 8% 20%;
-    --ring: 43 62% 47%;
+    --destructive-foreground: 210 20% 95%;
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 217 70% 55%;
     --radius: 0.625rem;
-    --sidebar-background: 150 12% 8%;
-    --sidebar-foreground: 40 20% 95%;
-    --sidebar-primary: 43 62% 47%;
-    --sidebar-primary-foreground: 150 14% 5%;
-    --sidebar-accent: 150 8% 15%;
-    --sidebar-accent-foreground: 40 20% 95%;
-    --sidebar-border: 140 8% 20%;
-    --sidebar-ring: 43 62% 47%;
+    --sidebar-background: 222 35% 8%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 217 70% 55%;
+    --sidebar-primary-foreground: 222 47% 5%;
+    --sidebar-accent: 222 25% 15%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 217 70% 55%;
     
-    /* Custom Refined Ledger Colors */
-    --rl-bg: #0c1412;
-    --rl-surface: #141f1c;
-    --rl-gold: #c9a227;
-    --rl-gold-dim: #9a7b1a;
-    --rl-income: #5a9a6e;
-    --rl-expense: #c75b5b;
-    --rl-text: #f5f3ef;
-    --rl-text-secondary: #a8b5b0;
-    --rl-border: rgba(245, 243, 239, 0.08);
+    /* Custom Finance Blue Theme Colors */
+    --fb-bg: #0a0f1a;
+    --fb-surface: #111827;
+    --fb-surface-elevated: #1a2234;
+    --fb-primary: #3b82f6;
+    --fb-primary-bright: #60a5fa;
+    --fb-primary-dim: #2563eb;
+    --fb-income: #10b981;
+    --fb-expense: #ef4444;
+    --fb-text: #f1f5f9;
+    --fb-text-secondary: #94a3b8;
+    --fb-border: rgba(148, 163, 184, 0.12);
+    --fb-glow: rgba(59, 130, 246, 0.15);
   }
 }
 
@@ -58,16 +61,16 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    background-color: var(--rl-bg);
-    color: var(--rl-text);
+    background-color: var(--fb-bg);
+    color: var(--fb-text);
     overflow-x: hidden;
   }
   
   /* Typography */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cinzel', serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.02em;
   }
   
   /* Tabular numbers for financial data */
@@ -75,7 +78,7 @@
     font-variant-numeric: tabular-nums;
   }
   
-  /* Grain overlay */
+  /* Subtle grain overlay */
   .grain-overlay {
     position: fixed;
     top: 0;
@@ -84,14 +87,14 @@
     height: 100%;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.04;
+    opacity: 0.03;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   }
   
-  /* Gold glow effect */
-  .gold-glow {
-    box-shadow: 0 0 40px rgba(201, 162, 39, 0.15);
+  /* Blue glow effect */
+  .blue-glow {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.12);
   }
   
   /* Card hover lift */
@@ -101,8 +104,8 @@
   
   .card-lift:hover {
     transform: translateY(-2px);
-    border-color: rgba(201, 162, 39, 0.35);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.08);
   }
   
   /* Transaction item hover */
@@ -112,19 +115,19 @@
   
   .transaction-item:hover {
     transform: translateX(4px);
-    border-color: rgba(201, 162, 39, 0.25);
-    background-color: rgba(201, 162, 39, 0.03);
+    border-color: rgba(59, 130, 246, 0.2);
+    background-color: rgba(59, 130, 246, 0.03);
   }
   
   /* Number flash animation */
-  @keyframes goldFlash {
-    0% { color: var(--rl-text); }
-    50% { color: var(--rl-gold); }
-    100% { color: var(--rl-text); }
+  @keyframes blueFlash {
+    0% { color: var(--fb-text); }
+    50% { color: var(--fb-primary-bright); }
+    100% { color: var(--fb-text); }
   }
   
   .number-flash {
-    animation: goldFlash 400ms ease-out;
+    animation: blueFlash 400ms ease-out;
   }
   
   /* Scrollbar styling */
@@ -134,49 +137,57 @@
   }
   
   ::-webkit-scrollbar-track {
-    background: var(--rl-surface);
+    background: var(--fb-surface);
   }
   
   ::-webkit-scrollbar-thumb {
-    background: var(--rl-text-secondary);
+    background: var(--fb-text-secondary);
     border-radius: 3px;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--rl-gold);
+    background: var(--fb-primary);
   }
 }
 
 @layer utilities {
-  .text-gold {
-    color: var(--rl-gold);
+  .text-primary-blue {
+    color: var(--fb-primary);
+  }
+  
+  .text-primary-bright {
+    color: var(--fb-primary-bright);
   }
   
   .text-income {
-    color: var(--rl-income);
+    color: var(--fb-income);
   }
   
   .text-expense {
-    color: var(--rl-expense);
+    color: var(--fb-expense);
   }
   
   .text-secondary {
-    color: var(--rl-text-secondary);
+    color: var(--fb-text-secondary);
   }
   
   .bg-surface {
-    background-color: var(--rl-surface);
+    background-color: var(--fb-surface);
   }
   
-  .bg-ledger {
-    background-color: var(--rl-bg);
+  .bg-finance {
+    background-color: var(--fb-bg);
   }
   
-  .border-gold {
-    border-color: var(--rl-gold);
+  .bg-surface-elevated {
+    background-color: var(--fb-surface-elevated);
+  }
+  
+  .border-primary-blue {
+    border-color: var(--fb-primary);
   }
   
   .border-subtle {
-    border-color: var(--rl-border);
+    border-color: var(--fb-border);
   }
 }

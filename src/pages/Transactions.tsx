@@ -125,10 +125,10 @@ export function TransactionsPage() {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <h1 className="font-serif text-2xl md:text-3xl text-ledger-text tracking-wider mb-2">
-            TRANSACTIONS
+          <h1 className="font-semibold text-2xl md:text-3xl text-finance-text tracking-tight mb-2">
+            Transactions
           </h1>
-          <p className="text-ledger-text-secondary text-sm">
+          <p className="text-finance-text-secondary text-sm">
             {isLoading ? 'Loading...' : `${filteredTransactions.length} entries found`}
           </p>
         </div>
@@ -143,13 +143,13 @@ export function TransactionsPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ledger-text-secondary" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-finance-text-secondary" />
               <Input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search transactions..."
-                className="pl-10 bg-ledger-surface border-ledger-border text-ledger-text placeholder:text-ledger-text-secondary/50 focus:border-gold focus:ring-gold/20"
+                className="pl-10 bg-finance-surface border-finance-text-secondary/10 text-finance-text placeholder:text-finance-text-secondary/50 focus:border-finance-primary focus:ring-finance-primary/20"
               />
             </div>
 
@@ -162,8 +162,8 @@ export function TransactionsPage() {
                   className={`
                     px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all duration-200
                     ${filter === f
-                      ? 'bg-gold/10 text-gold border border-gold/30'
-                      : 'bg-ledger-surface border border-ledger-border text-ledger-text-secondary hover:text-ledger-text'
+                      ? 'bg-finance-primary/10 text-finance-primary border border-finance-primary/30'
+                      : 'bg-finance-surface border border-finance-text-secondary/10 text-finance-text-secondary hover:text-finance-text'
                     }
                   `}
                 >
@@ -182,29 +182,29 @@ export function TransactionsPage() {
           `}
         >
           {isLoading ? (
-            <Card className="bg-ledger-surface border-ledger-border p-12 text-center">
+            <Card className="bg-finance-surface border-finance-text-secondary/10 p-12 text-center">
               <div className="flex items-center justify-center gap-2">
-                <span className="w-5 h-5 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
-                <span className="text-ledger-text-secondary">Loading transactions...</span>
+                <span className="w-5 h-5 border-2 border-finance-text-secondary/30 border-t-finance-primary rounded-full animate-spin" />
+                <span className="text-finance-text-secondary">Loading transactions...</span>
               </div>
             </Card>
           ) : groupedTransactions.length === 0 ? (
-            <Card className="bg-ledger-surface border-ledger-border p-12 text-center">
-              <p className="text-ledger-text-secondary">No transactions found</p>
-              <p className="text-ledger-text-secondary/60 text-sm mt-1">Try adjusting your search or filters</p>
+            <Card className="bg-finance-surface border-finance-text-secondary/10 p-12 text-center">
+              <p className="text-finance-text-secondary">No transactions found</p>
+              <p className="text-finance-text-secondary/60 text-sm mt-1">Try adjusting your search or filters</p>
             </Card>
           ) : (
             groupedTransactions.map(([date, dayTransactions]) => (
               <div key={date}>
                 {/* Date Header */}
-                <div className="sticky top-0 z-10 bg-ledger-bg/95 backdrop-blur-sm py-2 mb-2">
-                  <h3 className="font-serif text-xs text-ledger-text-secondary uppercase tracking-wider">
+                <div className="sticky top-0 z-10 bg-finance-bg/95 backdrop-blur-sm py-2 mb-2">
+                  <h3 className="font-semibold text-xs text-finance-text-secondary uppercase tracking-wider">
                     {formatDate(date)}
                   </h3>
                 </div>
 
                 {/* Transactions for this date */}
-                <Card className="bg-ledger-surface border-ledger-border overflow-hidden divide-y divide-ledger-border">
+                <Card className="bg-finance-surface border-finance-text-secondary/10 overflow-hidden divide-y divide-finance-text-secondary/10">
                   {dayTransactions.map((transaction) => {
                     const Icon = iconMap[getCategoryIcon(transaction.category)] || MoreHorizontal;
                     return (
@@ -216,26 +216,26 @@ export function TransactionsPage() {
                         `}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-ledger-bg flex items-center justify-center">
-                            <Icon className="w-4 h-4 text-ledger-text-secondary" />
+                          <div className="w-10 h-10 rounded-full bg-finance-bg flex items-center justify-center">
+                            <Icon className="w-4 h-4 text-finance-text-secondary" />
                           </div>
                           <div>
-                            <p className="text-ledger-text text-sm font-medium">{transaction.category}</p>
+                            <p className="text-finance-text text-sm font-medium">{transaction.category}</p>
                             {transaction.notes && (
-                              <p className="text-ledger-text-secondary text-xs">{transaction.notes}</p>
+                              <p className="text-finance-text-secondary text-xs">{transaction.notes}</p>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
                           <p className={`tabular-nums font-medium ${
-                            transaction.type === 'income' ? 'text-ledger-income' : 'text-ledger-expense'
+                            transaction.type === 'income' ? 'text-finance-income' : 'text-finance-expense'
                           }`}>
                             {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                           </p>
                           <button
                             onClick={() => handleDelete(transaction.id)}
                             disabled={deletingId === transaction.id}
-                            className="p-2 text-ledger-text-secondary hover:text-ledger-expense transition-colors disabled:opacity-50"
+                            className="p-2 text-finance-text-secondary hover:text-finance-expense transition-colors disabled:opacity-50"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

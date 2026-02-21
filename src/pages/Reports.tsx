@@ -125,17 +125,17 @@ export function ReportsPage() {
           `}
         >
           <div>
-            <h1 className="font-serif text-2xl md:text-3xl text-ledger-text tracking-wider mb-1">
-              REPORTS
+            <h1 className="font-semibold text-2xl md:text-3xl text-finance-text tracking-tight mb-1">
+              Reports
             </h1>
-            <p className="text-ledger-text-secondary text-sm">
+            <p className="text-finance-text-secondary text-sm">
               Insights into your financial health
             </p>
           </div>
           <Button
             onClick={handleExport}
             disabled={isLoading || allTransactions.length === 0}
-            className="flex items-center gap-2 bg-ledger-surface border border-ledger-border text-ledger-text hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-finance-surface border border-finance-text-secondary/10 text-finance-text hover:border-finance-primary/50 hover:text-finance-primary transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             Export CSV
@@ -150,36 +150,36 @@ export function ReportsPage() {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <Card className="bg-ledger-surface border-ledger-border p-5" style={{ borderTop: '2px solid #5a9a6e' }}>
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5" style={{ borderTop: '2px solid #10b981' }}>
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-4 h-4 text-ledger-income" />
-              <span className="text-ledger-text-secondary text-xs uppercase tracking-wider">Income</span>
+              <TrendingUp className="w-4 h-4 text-finance-income" />
+              <span className="text-finance-text-secondary text-xs uppercase tracking-wider">Income</span>
             </div>
-            <p className="font-serif text-xl text-ledger-income tabular-nums">{formatCurrencyFull(income)}</p>
+            <p className="font-semibold text-xl text-finance-income tabular-nums">{formatCurrencyFull(income)}</p>
           </Card>
 
-          <Card className="bg-ledger-surface border-ledger-border p-5" style={{ borderTop: '2px solid #c75b5b' }}>
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5" style={{ borderTop: '2px solid #ef4444' }}>
             <div className="flex items-center gap-2 mb-2">
-              <TrendingDown className="w-4 h-4 text-ledger-expense" />
-              <span className="text-ledger-text-secondary text-xs uppercase tracking-wider">Expenses</span>
+              <TrendingDown className="w-4 h-4 text-finance-expense" />
+              <span className="text-finance-text-secondary text-xs uppercase tracking-wider">Expenses</span>
             </div>
-            <p className="font-serif text-xl text-ledger-expense tabular-nums">{formatCurrencyFull(expense)}</p>
+            <p className="font-semibold text-xl text-finance-expense tabular-nums">{formatCurrencyFull(expense)}</p>
           </Card>
 
-          <Card className="bg-ledger-surface border-ledger-border p-5" style={{ borderTop: '2px solid #c9a227' }}>
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5" style={{ borderTop: '2px solid #3b82f6' }}>
             <div className="flex items-center gap-2 mb-2">
-              <Wallet className="w-4 h-4 text-gold" />
-              <span className="text-ledger-text-secondary text-xs uppercase tracking-wider">Net</span>
+              <Wallet className="w-4 h-4 text-finance-primary" />
+              <span className="text-finance-text-secondary text-xs uppercase tracking-wider">Net</span>
             </div>
-            <p className="font-serif text-xl text-gold tabular-nums">{formatCurrencyFull(balance)}</p>
+            <p className="font-semibold text-xl text-finance-primary tabular-nums">{formatCurrencyFull(balance)}</p>
           </Card>
 
-          <Card className="bg-ledger-surface border-ledger-border p-5" style={{ borderTop: '2px solid #a8b5b0' }}>
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5" style={{ borderTop: '2px solid #94a3b8' }}>
             <div className="flex items-center gap-2 mb-2">
-              <Calendar className="w-4 h-4 text-ledger-text-secondary" />
-              <span className="text-ledger-text-secondary text-xs uppercase tracking-wider">Savings Rate</span>
+              <Calendar className="w-4 h-4 text-finance-text-secondary" />
+              <span className="text-finance-text-secondary text-xs uppercase tracking-wider">Savings Rate</span>
             </div>
-            <p className={`font-serif text-xl tabular-nums ${savingsRate >= 20 ? 'text-ledger-income' : savingsRate >= 10 ? 'text-gold' : 'text-ledger-text'}`}>
+            <p className={`font-semibold text-xl tabular-nums ${savingsRate >= 20 ? 'text-finance-income' : savingsRate >= 10 ? 'text-finance-primary' : 'text-finance-text'}`}>
               {savingsRate.toFixed(1)}%
             </p>
           </Card>
@@ -192,17 +192,17 @@ export function ReportsPage() {
             ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
           `}
         >
-          <Card className="bg-ledger-surface border-ledger-border p-5">
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-serif text-sm text-ledger-text tracking-wider">
-                BALANCE OVER TIME
+              <h3 className="font-semibold text-sm text-finance-text tracking-tight">
+                Balance Over Time
               </h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPeriod('month')}
                   className={`
                     px-3 py-1 rounded text-xs transition-colors
-                    ${period === 'month' ? 'bg-gold/20 text-gold' : 'text-ledger-text-secondary hover:text-ledger-text'}
+                    ${period === 'month' ? 'bg-finance-primary/20 text-finance-primary' : 'text-finance-text-secondary hover:text-finance-text'}
                   `}
                 >
                   Monthly
@@ -211,7 +211,7 @@ export function ReportsPage() {
                   onClick={() => setPeriod('year')}
                   className={`
                     px-3 py-1 rounded text-xs transition-colors
-                    ${period === 'year' ? 'bg-gold/20 text-gold' : 'text-ledger-text-secondary hover:text-ledger-text'}
+                    ${period === 'year' ? 'bg-finance-primary/20 text-finance-primary' : 'text-finance-text-secondary hover:text-finance-text'}
                   `}
                 >
                   Yearly
@@ -221,49 +221,49 @@ export function ReportsPage() {
             <div className="h-72">
               {isLoading ? (
                 <div className="h-full flex items-center justify-center">
-                  <span className="w-6 h-6 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
+                  <span className="w-6 h-6 border-2 border-finance-text-secondary/30 border-t-finance-primary rounded-full animate-spin" />
                 </div>
               ) : monthlyData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={monthlyData}>
                     <defs>
                       <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#c9a227" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#c9a227" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <XAxis 
                       dataKey="month" 
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#a8b5b0', fontSize: 11 }}
+                      tick={{ fill: '#94a3b8', fontSize: 11 }}
                     />
                     <YAxis 
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#a8b5b0', fontSize: 11 }}
+                      tick={{ fill: '#94a3b8', fontSize: 11 }}
                       tickFormatter={(value) => formatCurrency(value)}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#141f1c',
-                        border: '1px solid rgba(245, 243, 239, 0.08)',
+                        backgroundColor: '#111827',
+                        border: '1px solid rgba(148, 163, 184, 0.12)',
                         borderRadius: '8px',
-                        color: '#f5f3ef',
+                        color: '#f1f5f9',
                       }}
                       formatter={(value: number) => formatCurrencyFull(value)}
                     />
                     <Area 
                       type="monotone" 
                       dataKey="balance" 
-                      stroke="#c9a227" 
+                      stroke="#3b82f6" 
                       strokeWidth={2}
                       fill="url(#balanceGradient)"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-ledger-text-secondary">
+                <div className="h-full flex items-center justify-center text-finance-text-secondary">
                   No data available
                 </div>
               )}
@@ -280,37 +280,37 @@ export function ReportsPage() {
           `}
         >
           {/* Top Insights */}
-          <Card className="bg-ledger-surface border-ledger-border p-5">
-            <h3 className="font-serif text-sm text-ledger-text tracking-wider mb-4">
-              KEY INSIGHTS
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5">
+            <h3 className="font-semibold text-sm text-finance-text tracking-tight mb-4">
+              Key Insights
             </h3>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-finance-primary mt-2 flex-shrink-0" />
                 <div>
-                  <p className="text-ledger-text text-sm">
+                  <p className="text-finance-text text-sm">
                     <span className="font-medium">{topCategory[0]}</span> is your largest spending category at{' '}
-                    <span className="text-gold">{formatCurrencyFull(topCategory[1] as number)}</span>
+                    <span className="text-finance-primary">{formatCurrencyFull(topCategory[1] as number)}</span>
                   </p>
                 </div>
               </div>
               {largestExpense && (
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-ledger-expense mt-2 flex-shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-finance-expense mt-2 flex-shrink-0" />
                   <div>
-                    <p className="text-ledger-text text-sm">
+                    <p className="text-finance-text text-sm">
                       Largest single expense: <span className="font-medium">{largestExpense.category}</span> at{' '}
-                      <span className="text-ledger-expense">{formatCurrencyFull(largestExpense.amount)}</span>
+                      <span className="text-finance-expense">{formatCurrencyFull(largestExpense.amount)}</span>
                     </p>
                   </div>
                 </div>
               )}
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-ledger-income mt-2 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-finance-income mt-2 flex-shrink-0" />
                 <div>
-                  <p className="text-ledger-text text-sm">
+                  <p className="text-finance-text text-sm">
                     Your savings rate is{' '}
-                    <span className={savingsRate >= 20 ? 'text-ledger-income' : savingsRate >= 10 ? 'text-gold' : 'text-ledger-text-secondary'}>
+                    <span className={savingsRate >= 20 ? 'text-finance-income' : savingsRate >= 10 ? 'text-finance-primary' : 'text-finance-text-secondary'}>
                       {savingsRate.toFixed(1)}%
                     </span>
                     {savingsRate >= 20 ? ' — Excellent!' : savingsRate >= 10 ? ' — Good progress' : ' — Room for improvement'}
@@ -321,34 +321,34 @@ export function ReportsPage() {
           </Card>
 
           {/* Monthly Comparison */}
-          <Card className="bg-ledger-surface border-ledger-border p-5">
-            <h3 className="font-serif text-sm text-ledger-text tracking-wider mb-4">
-              MONTHLY COMPARISON
+          <Card className="bg-finance-surface border-finance-text-secondary/10 p-5">
+            <h3 className="font-semibold text-sm text-finance-text tracking-tight mb-4">
+              Monthly Comparison
             </h3>
             <div className="space-y-3">
               {monthlyData.slice(-3).map((month) => (
                 <div key={month.month} className="flex items-center justify-between">
-                  <span className="text-ledger-text-secondary text-sm">{month.month}</span>
+                  <span className="text-finance-text-secondary text-sm">{month.month}</span>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-ledger-bg rounded-full overflow-hidden">
+                      <div className="w-16 h-1.5 bg-finance-bg rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-ledger-income rounded-full"
+                          className="h-full bg-finance-income rounded-full"
                           style={{ width: `${Math.min((month.income / 7000) * 100, 100)}%` }}
                         />
                       </div>
-                      <span className="text-ledger-income text-xs tabular-nums w-14 text-right">
+                      <span className="text-finance-income text-xs tabular-nums w-14 text-right">
                         {formatCurrency(month.income)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-ledger-bg rounded-full overflow-hidden">
+                      <div className="w-16 h-1.5 bg-finance-bg rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-ledger-expense rounded-full"
+                          className="h-full bg-finance-expense rounded-full"
                           style={{ width: `${Math.min((month.expense / 7000) * 100, 100)}%` }}
                         />
                       </div>
-                      <span className="text-ledger-expense text-xs tabular-nums w-14 text-right">
+                      <span className="text-finance-expense text-xs tabular-nums w-14 text-right">
                         {formatCurrency(month.expense)}
                       </span>
                     </div>
@@ -356,14 +356,14 @@ export function ReportsPage() {
                 </div>
               ))}
             </div>
-            <div className="flex items-center justify-end gap-6 mt-4 pt-3 border-t border-ledger-border">
+            <div className="flex items-center justify-end gap-6 mt-4 pt-3 border-t border-finance-text-secondary/10">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-ledger-income" />
-                <span className="text-ledger-text-secondary text-xs">Income</span>
+                <div className="w-2 h-2 rounded-full bg-finance-income" />
+                <span className="text-finance-text-secondary text-xs">Income</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-ledger-expense" />
-                <span className="text-ledger-text-secondary text-xs">Expense</span>
+                <div className="w-2 h-2 rounded-full bg-finance-expense" />
+                <span className="text-finance-text-secondary text-xs">Expense</span>
               </div>
             </div>
           </Card>

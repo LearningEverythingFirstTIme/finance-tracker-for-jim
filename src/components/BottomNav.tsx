@@ -15,12 +15,12 @@ const navItems = [
 
 export function BottomNav({ currentView, onNavigate }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-ledger-surface/95 backdrop-blur-md border-t border-ledger-border safe-area-pb">
-      {/* Gold glow for active item */}
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-finance-surface/95 backdrop-blur-md border-t border-finance-text-secondary/10 safe-area-pb">
+      {/* Blue glow for active item */}
       <div 
         className="absolute top-0 left-0 right-0 h-px opacity-50"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(201, 162, 39, 0.3) 50%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.3) 50%, transparent 100%)',
         }}
       />
       
@@ -36,8 +36,8 @@ export function BottomNav({ currentView, onNavigate }: BottomNavProps) {
               className={`
                 flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition-all duration-200
                 ${isActive 
-                  ? 'text-gold' 
-                  : 'text-ledger-text-secondary hover:text-ledger-text'
+                  ? 'text-finance-primary' 
+                  : 'text-finance-text-secondary hover:text-finance-text'
                 }
               `}
             >
@@ -47,12 +47,12 @@ export function BottomNav({ currentView, onNavigate }: BottomNavProps) {
                 />
                 {isActive && (
                   <div 
-                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-gold"
-                    style={{ boxShadow: '0 0 8px rgba(201, 162, 39, 0.6)' }}
+                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-finance-primary"
+                    style={{ boxShadow: '0 0 8px rgba(59, 130, 246, 0.6)' }}
                   />
                 )}
               </div>
-              <span className={`text-[10px] font-medium ${isActive ? 'text-gold' : ''}`}>
+              <span className={`text-[10px] font-medium ${isActive ? 'text-finance-primary' : ''}`}>
                 {item.label}
               </span>
             </button>

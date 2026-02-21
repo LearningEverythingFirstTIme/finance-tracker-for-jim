@@ -45,19 +45,19 @@ function App() {
   // Show loading state while checking auth
   if (isAuthLoading) {
     return (
-      <div className="bg-ledger-bg min-h-screen flex items-center justify-center">
+      <div className="bg-finance-bg min-h-screen flex items-center justify-center">
         <div className="grain-overlay" />
         <div className="flex flex-col items-center gap-4">
           <div 
             className="w-16 h-16 rounded-full flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(201, 162, 39, 0.05) 100%)',
-              border: '1px solid rgba(201, 162, 39, 0.3)',
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
             }}
           >
-            <span className="font-serif text-2xl text-gold font-semibold">J</span>
+            <span className="font-semibold text-2xl text-finance-primary font-sans">J</span>
           </div>
-          <span className="w-5 h-5 border-2 border-ledger-text-secondary/30 border-t-gold rounded-full animate-spin" />
+          <span className="w-5 h-5 border-2 border-finance-text-secondary/30 border-t-finance-primary rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -66,7 +66,7 @@ function App() {
   // Show login if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="bg-ledger-bg min-h-screen">
+      <div className="bg-finance-bg min-h-screen">
         <div className="grain-overlay" />
         <Login />
       </div>
@@ -93,7 +93,7 @@ function App() {
   };
 
   return (
-    <div className="bg-ledger-bg min-h-screen">
+    <div className="bg-finance-bg min-h-screen">
       {/* Grain overlay */}
       <div className="grain-overlay" />
       
