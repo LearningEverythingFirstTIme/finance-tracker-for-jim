@@ -1,15 +1,14 @@
 import { supabase } from '@/lib/supabase';
 import type { Transaction } from '@/types';
-import type { DbTransaction } from '@/lib/supabase';
 
 function mapDbToTransaction(db: any): Transaction {
   return {
     id: db.id,
     date: db.date,
     amount: db.amount,
-    category: db.category_id, // Map category_id to category
+    category: db.category,
     categoryId: db.category_id,
-    type: db.transaction_type,
+    type: db.type,
     notes: db.notes,
     createdAt: db.created_at,
   };
@@ -25,43 +24,17 @@ export interface TransactionInput {
 }
 
 export async function getTransactions(): Promise<Transaction[]> {
-  // Fetch transactions with category names
-  const { data: transactionsData, error: transError } = await supabase
+  const { data, error } = await supabase
     .from('transactions')
     .select('*')
     .order('date', { ascending: false });
 
-  if (transError) {
-    console.error('Error fetching transactions:', transError);
-    throw transError;
+  if (error) {
+    console.error('Error fetching transactions:', error);
+    throw error;
   }
 
-  // Fetch all categories for lookup
-  const { data: categoriesData, error: catError } = await supabase
-    .from('categories')
-    .select('id, name');
-
-  if (catError) {
-    console.error('Error fetching categories:', catError);
-    // Continue with ID as fallback
-  }
-
-  // Create category lookup map
-  const categoryMap: Record<number, string> = {};
-  (categoriesData || []).forEach(c => {
-    categoryMap[c.id] = c.name;
-  });
-
-  return (transactionsData || []).map(db => ({
-    id: db.id,
-    date: db.date,
-    amount: db.amount,
-    category: categoryMap[db.category_id] || String(db.category_id),
-    categoryId: String(db.category_id),
-    type: db.transaction_type,
-    notes: db.notes,
-    createdAt: db.created_at,
-  }));
+  return (data || []).map(mapDbToTransaction);
 }
 
 export async function addTransaction(data: TransactionInput): Promise<Transaction> {
@@ -77,8 +50,9 @@ export async function addTransaction(data: TransactionInput): Promise<Transactio
       user_id: user.id,
       date: data.date,
       amount: data.amount,
-      category_id: parseInt(data.categoryId, 10),
-      transaction_type: data.type,
+      category: data.category,
+      category_id: data.categoryId,
+      type: data.type,
       notes: data.notes,
     })
     .select()
@@ -86,15 +60,6 @@ export async function addTransaction(data: TransactionInput): Promise<Transactio
 
   if (error) {
     console.error('Error adding transaction:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
-    console.error('Request data:', {
-      user_id: user?.id,
-      date: data.date,
-      amount: data.amount,
-      category_id: parseInt(data.categoryId, 10),
-      transaction_type: data.type,
-      notes: data.notes,
-    });
     throw error;
   }
 
@@ -105,13 +70,13 @@ export async function updateTransaction(
   id: string, 
   data: Partial<TransactionInput>
 ): Promise<void> {
-  const updateData: Partial<DbTransaction> = {};
+  const updateData: Record<string, unknown> = {};
   
   if (data.date !== undefined) updateData.date = data.date;
   if (data.amount !== undefined) updateData.amount = data.amount;
   if (data.category !== undefined) updateData.category = data.category;
-  if (data.categoryId !== undefined) updateData.category_id = parseInt(data.categoryId, 10);
-  if (data.type !== undefined) updateData.transaction_type = data.type;
+  if (data.categoryId !== undefined) updateData.category_id = data.categoryId;
+  if (data.type !== undefined) updateData.type = data.type;
   if (data.notes !== undefined) updateData.notes = data.notes;
 
   const { error } = await supabase
@@ -148,8 +113,9 @@ export async function importTransactions(transactions: TransactionInput[]): Prom
     user_id: user.id,
     date: t.date,
     amount: t.amount,
-    category_id: parseInt(t.categoryId, 10),
-    transaction_type: t.type,
+    category: t.category,
+    category_id: t.categoryId,
+    type: t.type,
     notes: t.notes,
   }));
 
@@ -169,14 +135,13 @@ export async function getMonthlySummary(month: string): Promise<{
   expense: number;
   balance: number;
 }> {
-  // Parse month (format: YYYY-MM)
   const [year, monthNum] = month.split('-').map(Number);
   const startOfMonth = new Date(year, monthNum - 1, 1).toISOString().split('T')[0];
   const endOfMonth = new Date(year, monthNum, 0).toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('transactions')
-    .select('transaction_type, amount')
+    .select('type, amount')
     .gte('date', startOfMonth)
     .lte('date', endOfMonth);
 
@@ -186,11 +151,11 @@ export async function getMonthlySummary(month: string): Promise<{
   }
 
   const income = (data || [])
-    .filter(t => t.transaction_type === 'income')
+    .filter(t => t.type === 'income')
     .reduce((sum, t) => sum + t.amount, 0);
   
   const expense = (data || [])
-    .filter(t => t.transaction_type === 'expense')
+    .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
 
   return {
@@ -210,14 +175,13 @@ export async function getCategoryBreakdown(
   startDate: string, 
   endDate: string
 ): Promise<CategoryData[]> {
-  // Use ISO date format for Supabase
   const start = new Date(startDate).toISOString().split('T')[0];
   const end = new Date(endDate).toISOString().split('T')[0];
   
   const { data, error } = await supabase
     .from('transactions')
-    .select('category_id, amount')
-    .eq('transaction_type', 'expense')
+    .select('category, amount')
+    .eq('type', 'expense')
     .gte('date', start)
     .lte('date', end);
 
@@ -230,7 +194,7 @@ export async function getCategoryBreakdown(
   let total = 0;
 
   (data || []).forEach(t => {
-    categoryTotals[t.category_id] = (categoryTotals[t.category_id] || 0) + t.amount;
+    categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
     total += t.amount;
   });
 
@@ -256,7 +220,7 @@ export async function getMonthlyData(year: number): Promise<MonthlyData[]> {
 
   const { data, error } = await supabase
     .from('transactions')
-    .select('date, transaction_type, amount')
+    .select('date, type, amount')
     .gte('date', startDate)
     .lte('date', endDate);
 
@@ -268,11 +232,11 @@ export async function getMonthlyData(year: number): Promise<MonthlyData[]> {
   const monthlyMap: Record<string, { income: number; expense: number }> = {};
 
   (data || []).forEach(t => {
-    const month = t.date.substring(0, 7); // YYYY-MM
+    const month = t.date.substring(0, 7);
     if (!monthlyMap[month]) {
       monthlyMap[month] = { income: 0, expense: 0 };
     }
-    if (t.transaction_type === 'income') {
+    if (t.type === 'income') {
       monthlyMap[month].income += t.amount;
     } else {
       monthlyMap[month].expense += t.amount;
