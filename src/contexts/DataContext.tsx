@@ -7,6 +7,25 @@ import type { Transaction, Bill } from '@/types';
 import type { TransactionInput, BillInput } from '@/lib/api';
 import { toast } from 'sonner';
 
+// AA/Sobriety-themed encouraging messages
+const ENCOURAGING_MESSAGES = [
+  "One day at a time — and today, you're taking care of business.",
+  "Progress, not perfection. Every entry is a step toward financial sanity.",
+  "Just like we keep a moral inventory, we keep a financial one. Good work.",
+  "Self-supporting through our own contributions — you're living the Tradition.",
+  "Easy does it, but do it. You're showing up for yourself.",
+  "Faith without works is dead — and you're putting in the work.",
+  "Keep coming back — to your finances, to your program, to life.",
+  "We will not regret the past nor wish to shut the door on it. You're facing your numbers head-on.",
+  "To thine own self be true — honest books, honest recovery.",
+  "The Promises are coming true in all your affairs, including these.",
+];
+
+function getRandomEncouragingMessage(): string {
+  const index = Math.floor(Math.random() * ENCOURAGING_MESSAGES.length);
+  return ENCOURAGING_MESSAGES[index];
+}
+
 interface DataContextType {
   // Data
   transactions: Transaction[];
@@ -119,6 +138,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
       await refreshTransactions();
       await refreshDashboard();
       toast.success('Transaction added successfully');
+      // Show encouraging message after successful transaction
+      setTimeout(() => {
+        toast.message(getRandomEncouragingMessage(), {
+          icon: '💙',
+          style: {
+            background: '#1e3a5f',
+            border: '1px solid #2d5a87',
+            color: '#e0f0ff',
+          },
+        });
+      }, 500);
     } catch (error) {
       console.error('Error adding transaction:', error);
       toast.error('Failed to add transaction');
