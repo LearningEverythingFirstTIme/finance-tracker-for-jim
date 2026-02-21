@@ -77,7 +77,6 @@ export async function addTransaction(data: TransactionInput): Promise<Transactio
       user_id: user.id,
       date: data.date,
       amount: data.amount,
-      category: data.category,
       category_id: parseInt(data.categoryId, 10),
       transaction_type: data.type,
       notes: data.notes,
@@ -87,16 +86,6 @@ export async function addTransaction(data: TransactionInput): Promise<Transactio
 
   if (error) {
     console.error('Error adding transaction:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
-    console.error('Request data:', {
-      user_id: user.id,
-      date: data.date,
-      amount: data.amount,
-      category: data.category,
-      category_id: parseInt(data.categoryId, 10),
-      transaction_type: data.type,
-      notes: data.notes,
-    });
     throw error;
   }
 
@@ -150,7 +139,6 @@ export async function importTransactions(transactions: TransactionInput[]): Prom
     user_id: user.id,
     date: t.date,
     amount: t.amount,
-    category: t.category,
     category_id: parseInt(t.categoryId, 10),
     transaction_type: t.type,
     notes: t.notes,
