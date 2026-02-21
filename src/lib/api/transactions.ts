@@ -25,17 +25,43 @@ export interface TransactionInput {
 }
 
 export async function getTransactions(): Promise<Transaction[]> {
-  const { data, error } = await supabase
+  // Fetch transactions with category names
+  const { data: transactionsData, error: transError } = await supabase
     .from('transactions')
     .select('*')
     .order('date', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching transactions:', error);
-    throw error;
+  if (transError) {
+    console.error('Error fetching transactions:', transError);
+    throw transError;
   }
 
-  return (data || []).map(mapDbToTransaction);
+  // Fetch all categories for lookup
+  const { data: categoriesData, error: catError } = await supabase
+    .from('categories')
+    .select('id, name');
+
+  if (catError) {
+    console.error('Error fetching categories:', catError);
+    // Continue with ID as fallback
+  }
+
+  // Create category lookup map
+  const categoryMap: Record<number, string> = {};
+  (categoriesData || []).forEach(c => {
+    categoryMap[c.id] = c.name;
+  });
+
+  return (transactionsData || []).map(db => ({
+    id: db.id,
+    date: db.date,
+    amount: db.amount,
+    category: categoryMap[db.category_id] || String(db.category_id),
+    categoryId: String(db.category_id),
+    type: db.transaction_type,
+    notes: db.notes,
+    createdAt: db.created_at,
+  }));
 }
 
 export async function addTransaction(data: TransactionInput): Promise<Transaction> {
