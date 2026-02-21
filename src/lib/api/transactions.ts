@@ -183,7 +183,7 @@ export async function getCategoryBreakdown(
   
   const { data, error } = await supabase
     .from('transactions')
-    .select('category, amount')
+    .select('category_id, amount')
     .eq('transaction_type', 'expense')
     .gte('date', start)
     .lte('date', end);
@@ -197,7 +197,7 @@ export async function getCategoryBreakdown(
   let total = 0;
 
   (data || []).forEach(t => {
-    categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    categoryTotals[t.category_id] = (categoryTotals[t.category_id] || 0) + t.amount;
     total += t.amount;
   });
 
