@@ -78,7 +78,7 @@ export async function addTransaction(data: TransactionInput): Promise<Transactio
       date: data.date,
       amount: data.amount,
       category: data.category,
-      category_id: data.categoryId,
+      category_id: parseInt(data.categoryId, 10),
       transaction_type: data.type,
       notes: data.notes,
     })
@@ -102,7 +102,7 @@ export async function updateTransaction(
   if (data.date !== undefined) updateData.date = data.date;
   if (data.amount !== undefined) updateData.amount = data.amount;
   if (data.category !== undefined) updateData.category = data.category;
-  if (data.categoryId !== undefined) updateData.category_id = data.categoryId;
+  if (data.categoryId !== undefined) updateData.category_id = parseInt(data.categoryId, 10);
   if (data.type !== undefined) updateData.transaction_type = data.type;
   if (data.notes !== undefined) updateData.notes = data.notes;
 
@@ -141,7 +141,7 @@ export async function importTransactions(transactions: TransactionInput[]): Prom
     date: t.date,
     amount: t.amount,
     category: t.category,
-    category_id: t.categoryId,
+    category_id: parseInt(t.categoryId, 10),
     transaction_type: t.type,
     notes: t.notes,
   }));

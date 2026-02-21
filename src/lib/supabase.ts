@@ -21,7 +21,7 @@ export interface DbTransaction {
   date: string;
   amount: number;
   category: string;
-  category_id: string;
+  category_id: number;
   transaction_type: 'income' | 'expense';
   notes: string;
   created_at: string;
