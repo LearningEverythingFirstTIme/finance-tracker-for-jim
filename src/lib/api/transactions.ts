@@ -7,7 +7,7 @@ function mapDbToTransaction(db: any): Transaction {
     id: db.id,
     date: db.date,
     amount: db.amount,
-    category: db.category,
+    category: db.category_id, // Map category_id to category
     categoryId: db.category_id,
     type: db.transaction_type,
     notes: db.notes,
