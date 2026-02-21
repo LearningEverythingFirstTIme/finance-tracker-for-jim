@@ -86,6 +86,15 @@ export async function addTransaction(data: TransactionInput): Promise<Transactio
 
   if (error) {
     console.error('Error adding transaction:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    console.error('Request data:', {
+      user_id: user?.id,
+      date: data.date,
+      amount: data.amount,
+      category_id: parseInt(data.categoryId, 10),
+      transaction_type: data.type,
+      notes: data.notes,
+    });
     throw error;
   }
 
